@@ -335,17 +335,27 @@ if (!function_exists('connectDBEnvironment')) {
 // Função para conexão multi-banco (acessa qualquer banco)
 if (!function_exists('connectDBMulti')) {
     function connectDBMulti() {
-        // Sempre usar credenciais de desenvolvimento local que funcionam
-        $host = 'localhost';
-        $user = 'root';
-        $pass = '';
-        
+        global $environment;
+
+        if ($environment === 'production') {
+            // Em produção, conectar com usuário que tem permissões cross-database
+            // Usar as credenciais do portal da diretoria que parecem ter mais privilégios
+            $host = 'localhost';
+            $user = 'usergprotoc';  // Usuário do portal da diretoria
+            $pass = '8092QNSANSnjlaskn0u2Jjhoiq02';  // Senha do portal da diretoria
+        } else {
+            // Credenciais de desenvolvimento
+            $host = 'localhost';
+            $user = 'root';
+            $pass = '';
+        }
+
         $mysqli = new mysqli($host, $user, $pass);
-        
+
         if ($mysqli->connect_error) {
             throw new Exception("Erro de conexão multi-banco: " . $mysqli->connect_error);
         }
-        
+
         return $mysqli;
     }
 }
