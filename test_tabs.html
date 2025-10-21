@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Abas</title>
+    <style>
+        .tab-button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background: #ccc;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste do Sistema de Abas</h1>
+    
+    <div class="tabs">
+        <button class="tab-button active" data-tab="consolidado">Visão Consolidada</button>
+        <button class="tab-button" data-tab="portais">Resumos dos Portais</button>
+        <button class="tab-button" data-tab="chamados">Lista de Chamados</button>
+    </div>
+    
+    <div id="consolidado" class="tab-content active">
+        <h2>Visão Consolidada</h2>
+        <p>Conteúdo da aba Visão Consolidada</p>
+    </div>
+    
+    <div id="portais" class="tab-content">
+        <h2>Resumos dos Portais</h2>
+        <p>Conteúdo da aba Resumos dos Portais</p>
+    </div>
+    
+    <div id="chamados" class="tab-content">
+        <h2>Lista de Chamados</h2>
+        <p>Conteúdo da aba Lista de Chamados</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Script carregado');
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            console.log('Botões encontrados:', tabButtons.length);
+            console.log('Conteúdos encontrados:', tabContents.length);
+
+            tabButtons.forEach((button, index) => {
+                console.log('Adicionando listener ao botão:', index);
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    console.log('Clicado em:', targetTab);
+                    
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    this.classList.add('active');
+                    const targetContent = document.getElementById(targetTab);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                        console.log('Aba ativada:', targetTab);
+                    } else {
+                        console.error('Conteúdo não encontrado para:', targetTab);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

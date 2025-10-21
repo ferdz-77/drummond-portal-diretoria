@@ -1,0 +1,47 @@
+<?php
+require_once 'includes/config.php';
+require_once 'data/data_ead.php';
+require_once 'data/data_secretaria.php';
+
+$ead_servicos = getServicosSolicitadosEAD();
+$secretaria_servicos = getServicosSolicitadosSecretaria();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Dashboard Data</title>
+</head>
+<body>
+    <h1>Debug Dashboard Data</h1>
+
+    <h2>EAD Serviços</h2>
+    <pre><?php echo json_encode($ead_servicos, JSON_PRETTY_PRINT); ?></pre>
+
+    <h2>Secretaria Serviços</h2>
+    <pre><?php echo json_encode($secretaria_servicos, JSON_PRETTY_PRINT); ?></pre>
+
+    <h2>JavaScript Test</h2>
+    <div id="test"></div>
+
+    <script>
+        var eadServicos = <?php echo json_encode($ead_servicos); ?>;
+        var secretariaServicos = <?php echo json_encode($secretaria_servicos); ?>;
+
+        console.log("EAD:", eadServicos);
+        console.log("Secretaria:", secretariaServicos);
+
+        var eadLabels = eadServicos.length > 0
+            ? eadServicos.map((item) => item.categoria || item.tipo || item.servico)
+            : ["Default"];
+
+        var secretariaLabels = secretariaServicos.length > 0
+            ? secretariaServicos.map((item) => item.categoria || item.tipo || item.servico)
+            : ["Default"];
+
+        document.getElementById('test').innerHTML =
+            "<p>EAD Labels: " + eadLabels.join(', ') + "</p>" +
+            "<p>Secretaria Labels: " + secretariaLabels.join(', ') + "</p>";
+    </script>
+</body>
+</html>

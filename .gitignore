@@ -1,0 +1,40 @@
+# Arquivos de log
+*.log
+error.log
+access.log
+production_error.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+*~
+
+# Cache do PHP
+cache/
+tmp/
+
+# Arquivos de configuração sensíveis
+.env
+config.php
+includes/config.php
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Backups
+*.bak
+*.backup
+backup_*.zip
+
+# Arquivos de desenvolvimento
+debug_*.php
+test_*.php
+*_debug.php
+*_test.php
+
+# Diretórios do XAMPP
+/xampp/
+/apache/
+/mysql/
+/php/

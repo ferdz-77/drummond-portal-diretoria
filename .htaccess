@@ -1,0 +1,31 @@
+# .htaccess - Configurações básicas de segurança
+
+# Forçar processamento de PHP
+AddType application/x-httpd-php .php
+AddHandler application/x-httpd-php .php
+DirectoryIndex index.php index.html
+
+# Configurações básicas de PHP
+php_flag log_errors On
+php_flag display_errors Off
+php_value max_execution_time 300
+php_value memory_limit 256M
+
+# Forçar processamento específico para dashboard.php
+<Files "dashboard.php">
+    AddType application/x-httpd-php .php
+    AddHandler application/x-httpd-php .php
+</Files>
+
+# Proteger arquivos de configuração
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options DENY
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>

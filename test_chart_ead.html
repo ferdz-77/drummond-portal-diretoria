@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Gráfico EAD</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .chart-container { width: 400px; height: 400px; margin: 20px 0; }
+        .debug { background: #f5f5f5; padding: 10px; margin: 10px 0; border-left: 3px solid #007cba; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Gráfico EAD - Debug</h1>
+    
+    <div class="debug">
+        <h3>📊 Dados EAD do Sistema:</h3>
+        <pre id="dadosEAD"></pre>
+    </div>
+
+    <div class="chart-container">
+        <h3>🥧 Gráfico Pizza - Serviços EAD</h3>
+        <canvas id="testChartEAD"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h3>🥧 Gráfico Pizza - Dados Mockados</h3>
+        <canvas id="testChartMock"></canvas>
+    </div>
+
+    <script>
+        // Simular dados EAD como vem do PHP
+        var eadServicos = [
+            {
+                "categoria": "Categoria não informada",
+                "count": 1
+            }
+        ];
+
+        // Debug
+        document.getElementById('dadosEAD').textContent = JSON.stringify(eadServicos, null, 2);
+        console.log("🔍 eadServicos =", eadServicos);
+
+        // Processar dados como no dashboard.js
+        var labelsEADServ = eadServicos.length > 0
+            ? eadServicos.map((item) => item.categoria || item.tipo || item.servico)
+            : ["Matrícula", "Certificado", "Suporte"];
+        var dataEADServ = eadServicos.length > 0
+            ? eadServicos.map((item) => item.count)
+            : [30, 22, 16];
+
+        console.log("📊 labelsEADServ =", labelsEADServ);
+        console.log("📊 dataEADServ =", dataEADServ);
+
+        // Criar gráfico 1 - Dados reais do EAD
+        var ctx1 = document.getElementById('testChartEAD').getContext('2d');
+        new Chart(ctx1, {
+            type: 'pie',
+            data: {
+                labels: labelsEADServ,
+                datasets: [{
+                    data: dataEADServ,
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Dados Reais EAD'
+                    }
+                }
+            }
+        });
+
+        // Criar gráfico 2 - Dados mockados para comparação
+        var ctx2 = document.getElementById('testChartMock').getContext('2d');
+        new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['Suporte Técnico', 'Certificados', 'Matrículas', 'Material Didático'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Dados Mockados (Comparação)'
+                    }
+                }
+            }
+        });
+
+        console.log("✅ Gráficos criados!");
+    </script>
+</body>
+</html>
