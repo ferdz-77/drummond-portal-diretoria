@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// DEBUG: Forçar exibição de erros
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
 // Configurar tratamento de erro para produção
 $currentEnv = $_ENV['APP_ENV'] ?? getenv('APP_ENV');
 if ($currentEnv === 'production') {
@@ -517,6 +522,132 @@ function getSLAClass($sla) {
             </button>
         </div>
 
+        <?php
+        // Obter últimos 100 chamados de todos os portais (sempre executado)
+        $todos_chamados = [];
+
+        try {
+            // Buscar dados de cada portal individualmente (mais confiável que cross-database)
+
+            // Ouvidoria
+            try {
+                $conn_ouvidoria = connectDB(getProductionDatabaseName('ouvidoria'));
+                $query_ouvidoria = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Ouvidoria' as portal
+                                   FROM chamados
+                                   ORDER BY data_abertura DESC LIMIT 100";
+                $result_ouvidoria = $conn_ouvidoria->query($query_ouvidoria);
+                if ($result_ouvidoria) {
+                    $count_ouv = 0;
+                    while ($row = $result_ouvidoria->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ouv++;
+                    }
+                }
+                $conn_ouvidoria = null;
+            } catch (Exception $e) {
+            }
+
+            // EAD
+            try {
+                $conn_ead = connectDB(getProductionDatabaseName('ead'));
+                $query_ead = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'EAD' as portal
+                             FROM chamados
+                             ORDER BY data_abertura DESC LIMIT 100";
+                $result_ead = $conn_ead->query($query_ead);
+                if ($result_ead) {
+                    $count_ead = 0;
+                    while ($row = $result_ead->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ead++;
+                    }
+                }
+                $conn_ead = null;
+            } catch (Exception $e) {
+            }
+
+            // Processo Seletivo
+            try {
+                $conn_processo = connectDB(getProductionDatabaseName('processo_seletivo'));
+                $query_processo = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'Processo Seletivo' as portal
+                                  FROM chamados
+                                  ORDER BY data_abertura DESC LIMIT 100";
+                $result_processo = $conn_processo->query($query_processo);
+                if ($result_processo) {
+                    $count_proc = 0;
+                    while ($row = $result_processo->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_proc++;
+                    }
+                }
+                $conn_processo = null;
+            } catch (Exception $e) {
+            }
+
+            // Secretaria
+            try {
+                $conn_secretaria = connectDB(getProductionDatabaseName('secretaria'));
+                $query_secretaria = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Secretaria' as portal
+                                    FROM chamados
+                                    ORDER BY data_abertura DESC LIMIT 100";
+                $result_secretaria = $conn_secretaria->query($query_secretaria);
+                if ($result_secretaria) {
+                    $count_sec = 0;
+                    while ($row = $result_secretaria->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_sec++;
+                    }
+                }
+                $conn_secretaria = null;
+            } catch (Exception $e) {
+            }
+
+            // Financeiro
+            try {
+                $conn_financeiro = connectDB(getProductionDatabaseName('financeiro'));
+                $query_financeiro = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'Financeiro' as portal
+                                    FROM chamados
+                                    ORDER BY data_abertura DESC LIMIT 20";
+                $result_financeiro = $conn_financeiro->query($query_financeiro);
+                if ($result_financeiro) {
+                    $count_fin = 0;
+                    while ($row = $result_financeiro->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_fin++;
+                    }
+                }
+                $conn_financeiro = null;
+            } catch (Exception $e) {
+            }
+
+            // Ex-Aluno
+            try {
+                $conn_exaluno = connectDB(getProductionDatabaseName('exaluno'));
+                $query_exaluno = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Ex-Aluno' as portal
+                                 FROM chamados
+                                 ORDER BY data_abertura DESC LIMIT 100";
+                $result_exaluno = $conn_exaluno->query($query_exaluno);
+                if ($result_exaluno) {
+                    $count_ex = 0;
+                    while ($row = $result_exaluno->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ex++;
+                    }
+                }
+                $conn_exaluno = null;
+            } catch (Exception $e) {
+            }
+
+            // Ordenar todos os chamados por data e limitar a 100 (últimos de todos os portais)
+            usort($todos_chamados, function($a, $b) {
+                return strtotime($b['data_criacao']) - strtotime($a['data_criacao']);
+            });
+            $todos_chamados = array_slice($todos_chamados, 0, 100);
+
+        } catch (Exception $e) {
+            $todos_chamados = [];
+        }
+        ?>
+
         <!-- Abas de navegação -->
         <div class="tabs">
             <button class="tab-button <?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'active' : ''; ?>" data-tab="consolidado">Visão Consolidada</button>
@@ -701,98 +832,6 @@ function getSLAClass($sla) {
                             </thead>
                             <tbody id="chamadosTableBody">
                                 <?php
-                                // Obter últimos 100 chamados de todos os portais
-                                $todos_chamados = [];
-                                
-                                try {
-                                    // Usar conexão multi-banco que pode acessar todos os portais
-                                    $conn = connectDBMulti();
-                                    
-                                    // Ouvidoria
-                                    $db_ouvidoria = getProductionDatabaseName('ouvidoria');
-                                    $query_ouvidoria = "SELECT id, titulo as assunto, status, data_criacao, 'Ouvidoria' as portal 
-                                                       FROM {$db_ouvidoria}.chamados 
-                                                       ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_ouvidoria = $conn->query($query_ouvidoria);
-                                    if ($result_ouvidoria) {
-                                        while ($row = $result_ouvidoria->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // EAD
-                                    $db_ead = getProductionDatabaseName('ead');
-                                    $query_ead = "SELECT id, assunto, status, data_abertura as data_criacao, 'EAD' as portal 
-                                                 FROM {$db_ead}.solicitacoes 
-                                                 ORDER BY data_abertura DESC LIMIT 20";
-                                    $result_ead = $conn->query($query_ead);
-                                    if ($result_ead) {
-                                        while ($row = $result_ead->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Processo Seletivo
-                                    $db_processo = getProductionDatabaseName('processo_seletivo');
-                                    $query_processo = "SELECT id, descricao as assunto, status, data_criacao, 'Processo Seletivo' as portal 
-                                                      FROM {$db_processo}.chamados 
-                                                      ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_processo = $conn->query($query_processo);
-                                    if ($result_processo) {
-                                        while ($row = $result_processo->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Secretaria
-                                    $db_secretaria = getProductionDatabaseName('secretaria');
-                                    $query_secretaria = "SELECT id, descricao as assunto, status, data_solicitacao as data_criacao, 'Secretaria' as portal 
-                                                        FROM {$db_secretaria}.solicitacoes 
-                                                        ORDER BY data_solicitacao DESC LIMIT 20";
-                                    $result_secretaria = $conn->query($query_secretaria);
-                                    if ($result_secretaria) {
-                                        while ($row = $result_secretaria->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Financeiro
-                                    $db_financeiro = getProductionDatabaseName('financeiro');
-                                    $query_financeiro = "SELECT id, assunto, status, data_abertura as data_criacao, 'Financeiro' as portal 
-                                                        FROM {$db_financeiro}.tickets 
-                                                        ORDER BY data_abertura DESC LIMIT 20";
-                                    $result_financeiro = $conn->query($query_financeiro);
-                                    if ($result_financeiro) {
-                                        while ($row = $result_financeiro->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Ex-Aluno
-                                    $db_exaluno = getProductionDatabaseName('exaluno');
-                                    $query_exaluno = "SELECT id, titulo as assunto, status, data_criacao, 'Ex-Aluno' as portal 
-                                                     FROM {$db_exaluno}.solicitacoes 
-                                                     ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_exaluno = $conn->query($query_exaluno);
-                                    if ($result_exaluno) {
-                                        while ($row = $result_exaluno->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Ordenar todos os chamados por data e limitar a 100
-                                    usort($todos_chamados, function($a, $b) {
-                                        return strtotime($b['data_criacao']) - strtotime($a['data_criacao']);
-                                    });
-                                    $todos_chamados = array_slice($todos_chamados, 0, 100);
-                                    
-                                    $conn->close();
-                                    
-                                } catch (Exception $e) {
-                                    error_log("Erro ao buscar chamados: " . $e->getMessage());
-                                    $todos_chamados = [];
-                                }
-                                
                                 if (count($todos_chamados) > 0):
                                     foreach ($todos_chamados as $chamado):
                                         $status_class = '';
