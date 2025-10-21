@@ -26,37 +26,37 @@ if ($environment === 'production') {
             'host' => 'localhost',
             'user' => 'bdsolatend',
             'pass' => 'opqwioihjOHUQHOQWNNA234',
-            'dbname' => 'portal_ouvidoria'  // Corrigido para nome real do banco
+            'dbname' => 'bdsolicita_atendimento'  // AGORA - Corrigido para nome real do banco
         ],
         'ead' => [
             'host' => 'localhost',
             'user' => 'eaduseroot',
             'pass' => 'OPHFQOIfOHOUHOou-039-',
-            'dbname' => 'portal_ead'  // Corrigido para nome real do banco
+            'dbname' => 'dbead'  // Corrigido para nome real do banco
         ],
         'processo_seletivo' => [
             'host' => 'localhost',
             'user' => 'pseluserdb',
             'pass' => 'gpoaGGWOIJW5874ajds123478',
-            'dbname' => 'portal_processo_seletivo'  // Corrigido para nome real do banco
+            'dbname' => 'pseldb'  // Corrigido para nome real do banco
         ],
         'secretaria' => [
             'host' => 'localhost',
             'user' => 'dbsecretacaduser',
             'pass' => 'agkljUHP79654AJjosh27Y616',
-            'dbname' => 'portal_secretaria_academica'  // Corrigido para nome real do banco
+            'dbname' => 'dbsecretacad'  // Corrigido para nome real do banco
         ],
         'financeiro' => [
             'host' => 'localhost',
             'user' => 'userfinidb',
             'pass' => 'AJHPFGiuhpuwh093876524yr',
-            'dbname' => 'portal_financeiro'  // Corrigido para nome real do banco
+            'dbname' => 'fini'  // Corrigido para nome real do banco
         ],
         'exaluno' => [
             'host' => 'localhost',
             'user' => 'bdsolatend', // Mesmo usuário da Ouvidoria
             'pass' => 'opqwioihjOHUQHOQWNNA234', // Mesma senha da Ouvidoria
-            'dbname' => 'portal_exaluno'  // Corrigido para nome real do banco
+            'dbname' => 'bdsolicita_atendimento'  // Corrigido para nome real do banco
         ],
         'portal_diretoria' => [
             'host' => 'localhost', // Host confirmado funcionando
@@ -200,12 +200,23 @@ if (!function_exists('connectDB')) {
 // Função para conectar ao banco do portal da diretoria (notificações)
 if (!function_exists('connectPortalDiretoria')) {
     function connectPortalDiretoria() {
-        // Sempre usar credenciais de desenvolvimento local que funcionam
-        $host = 'localhost';
-        $user = 'root';
-        $pass = '';
-        $dbname = 'portal_diretoria';
-        
+        global $environment, $db_credentials;
+
+        if ($environment === 'production' && isset($db_credentials['portal_diretoria'])) {
+            // Usar credenciais específicas de produção
+            $config = $db_credentials['portal_diretoria'];
+            $host = $config['host'];
+            $user = $config['user'];
+            $pass = $config['pass'];
+            $dbname = $config['dbname'];
+        } else {
+            // Credenciais de desenvolvimento
+            $host = 'localhost';
+            $user = 'root';
+            $pass = '';
+            $dbname = 'portal_diretoria';
+        }
+
         try {
             $conn = new mysqli($host, $user, $pass, $dbname);
             if ($conn->connect_error) {
