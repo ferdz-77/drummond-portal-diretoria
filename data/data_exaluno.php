@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/filter_helpers.php';
 
 function getSLAMedioExAlunoMesAnterior() {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EXALUNO . ", " . COL_DATA_ABERTURA_EXALUNO . ")) as sla_medio FROM " . TABLE_EXALUNO . " WHERE " . COL_DATA_FECHAMENTO_EXALUNO . " IS NOT NULL AND " . COL_STATUS_EXALUNO . " = 'Fechado' AND MONTH(" . COL_DATA_FECHAMENTO_EXALUNO . ") = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(" . COL_DATA_FECHAMENTO_EXALUNO . ") = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -16,7 +16,7 @@ function getSLAMedioExAlunoMesAnterior() {
 
 function getChamadosStatusExAluno() {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $stmt = $pdo->query("SELECT " . COL_STATUS_EXALUNO . ", COUNT(*) as count FROM " . TABLE_EXALUNO . " GROUP BY " . COL_STATUS_EXALUNO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
@@ -27,7 +27,7 @@ function getChamadosStatusExAluno() {
 
 function getSLAMedioExAluno() {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EXALUNO . ", " . COL_DATA_ABERTURA_EXALUNO . ")) as sla_medio FROM " . TABLE_EXALUNO . " WHERE " . COL_DATA_FECHAMENTO_EXALUNO . " IS NOT NULL AND " . COL_STATUS_EXALUNO . " = 'Transferido'");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -38,7 +38,7 @@ function getSLAMedioExAluno() {
 }
 
 function getServicosSolicitadosExAluno() {
-    $pdo = connectDBEnvironment('portal_exaluno');
+    $pdo = connectDB(getProductionDatabaseName('exaluno'));
     try {
         $stmt = $pdo->query("SELECT " . COL_SERVICO_EXALUNO . ", COUNT(*) as count FROM " . TABLE_EXALUNO . " GROUP BY " . COL_SERVICO_EXALUNO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -51,7 +51,7 @@ function getServicosSolicitadosExAluno() {
 // Funções filtradas por período
 function getChamadosStatusExAlunoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_EXALUNO);
         $stmt = $pdo->query("SELECT " . COL_STATUS_EXALUNO . ", COUNT(*) as count FROM " . TABLE_EXALUNO . " WHERE 1=1" . $whereClause . " GROUP BY " . COL_STATUS_EXALUNO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -62,7 +62,7 @@ function getChamadosStatusExAlunoFiltered($periodo) {
 
 function getSLAMedioExAlunoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_FECHAMENTO_EXALUNO);
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EXALUNO . ", " . COL_DATA_ABERTURA_EXALUNO . ")) as sla_medio FROM " . TABLE_EXALUNO . " WHERE " . COL_DATA_FECHAMENTO_EXALUNO . " IS NOT NULL AND " . COL_STATUS_EXALUNO . " = 'Fechado'" . $whereClause);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -74,7 +74,7 @@ function getSLAMedioExAlunoFiltered($periodo) {
 
 function getServicosSolicitadosExAlunoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_EXALUNO);
         $stmt = $pdo->query("SELECT " . COL_SERVICO_EXALUNO . ", COUNT(*) as count FROM " . TABLE_EXALUNO . " WHERE 1=1" . $whereClause . " GROUP BY " . COL_SERVICO_EXALUNO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

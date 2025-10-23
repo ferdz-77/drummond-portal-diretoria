@@ -26,7 +26,7 @@ function getChamadosStatusFinanceiro() {
 
 function getSLAMedioFinanceiro() {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_FINANCEIRO . ", " . COL_DATA_ABERTURA_FINANCEIRO . ")) as sla_medio FROM " . TABLE_FINANCEIRO . " WHERE " . COL_DATA_FECHAMENTO_FINANCEIRO . " IS NOT NULL AND " . COL_STATUS_FINANCEIRO . " = 'finalizado'");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -38,7 +38,7 @@ function getSLAMedioFinanceiro() {
 
 function getSLAMedioFinanceiroMesAnterior() {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_FINANCEIRO . ", " . COL_DATA_ABERTURA_FINANCEIRO . ")) as sla_medio FROM " . TABLE_FINANCEIRO . " WHERE " . COL_DATA_FECHAMENTO_FINANCEIRO . " IS NOT NULL AND " . COL_STATUS_FINANCEIRO . " = 'finalizado' AND MONTH(" . COL_DATA_FECHAMENTO_FINANCEIRO . ") = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(" . COL_DATA_FECHAMENTO_FINANCEIRO . ") = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -50,7 +50,7 @@ function getSLAMedioFinanceiroMesAnterior() {
 
 function getServicosSolicitadosFinanceiro() {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $stmt = $pdo->query("SELECT 
             CASE 
                 WHEN " . COL_SERVICO_FINANCEIRO . " = '' OR " . COL_SERVICO_FINANCEIRO . " IS NULL THEN 'Categoria não informada'
@@ -73,7 +73,7 @@ function getServicosSolicitadosFinanceiro() {
 // Funções filtradas por período
 function getChamadosStatusFinanceiroFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_FINANCEIRO);
         $stmt = $pdo->query("SELECT 
             CASE 
@@ -96,7 +96,7 @@ function getChamadosStatusFinanceiroFiltered($periodo) {
 
 function getSLAMedioFinanceiroFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_FECHAMENTO_FINANCEIRO);
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_FINANCEIRO . ", " . COL_DATA_ABERTURA_FINANCEIRO . ")) as sla_medio FROM " . TABLE_FINANCEIRO . " WHERE " . COL_DATA_FECHAMENTO_FINANCEIRO . " IS NOT NULL AND " . COL_STATUS_FINANCEIRO . " = 'Fechado'" . $whereClause);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -108,7 +108,7 @@ function getSLAMedioFinanceiroFiltered($periodo) {
 
 function getServicosSolicitadosFinanceiroFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('portal_financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_FINANCEIRO);
         $stmt = $pdo->query("SELECT 
             CASE 
