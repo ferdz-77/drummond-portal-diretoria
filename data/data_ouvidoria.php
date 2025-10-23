@@ -82,4 +82,16 @@ function getTiposManifestacaoOuvidoriaFiltered($periodo) {
         return [];
     }
 }
+
+function getTotalChamadosOuvidoria() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('ouvidoria'));
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_OUVIDORIA);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
 ?>

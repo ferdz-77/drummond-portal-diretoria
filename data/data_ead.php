@@ -128,4 +128,16 @@ function getServicosSolicitadosEADFiltered($periodo) {
         return [];
     }
 }
+
+function getTotalChamadosEAD() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('ead'));
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_EAD);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
 ?>

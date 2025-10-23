@@ -128,4 +128,16 @@ function getServicosSolicitadosProcessoSeletivoFiltered($periodo) {
         return [];
     }
 }
+
+function getTotalChamadosProcessoSeletivo() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_PROCESSO);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
 ?>

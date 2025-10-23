@@ -161,6 +161,23 @@ try {
     $exaluno_servicos_original = [];
 }
 
+// Calcular totais de chamados para cada portal
+try {
+    $ouvidoria_total = getTotalChamadosOuvidoria();
+    $ead_total = getTotalChamadosEAD();
+    $processo_total = getTotalChamadosProcessoSeletivo();
+    $secretaria_total = getTotalChamadosSecretaria();
+    $financeiro_total = getTotalChamadosFinanceiro();
+    $exaluno_total = getTotalChamadosExAluno();
+} catch (Exception $e) {
+    $ouvidoria_total = 0;
+    $ead_total = 0;
+    $processo_total = 0;
+    $secretaria_total = 0;
+    $financeiro_total = 0;
+    $exaluno_total = 0;
+}
+
 // Buscar dados para cada portal
 if ($portal_filter === 'todos') {
     if ($periodo_filter === 'todos') {
@@ -667,6 +684,7 @@ function getSLAClass($sla) {
             <!-- <h2>Resumos dos Portais</h2> -->
             <section id="ouvidoria" class="resumo-portal <?php echo getSLAClass($ouvidoria_sla); ?>">
                 <h2>Portal da Ouvidoria</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($ouvidoria_total); ?></strong></p>
                 <canvas id="chartOuvidoriaStatus"></canvas>
                 <p>SLA Médio: <?php echo $ouvidoria_sla; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($ouvidoria_sla_anterior > 0 && $ouvidoria_sla < $ouvidoria_sla_anterior) ? 'positivo' : (($ouvidoria_sla_anterior > 0) ? 'negativo' : 'neutro'); ?>">
@@ -684,6 +702,7 @@ function getSLAClass($sla) {
 
             <section id="ead" class="resumo-portal <?php echo getSLAClass($ead_sla); ?>">
                 <h2>Portal do EAD</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($ead_total); ?></strong></p>
                 <canvas id="chartEADStatus"></canvas>
                 <p>SLA Médio: <?php echo $ead_sla; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($ead_sla_anterior > 0 && $ead_sla < $ead_sla_anterior) ? 'positivo' : (($ead_sla_anterior > 0) ? 'negativo' : 'neutro'); ?>">
@@ -701,6 +720,7 @@ function getSLAClass($sla) {
 
             <section id="processo" class="resumo-portal <?php echo getSLAClass($processo_sla); ?>">
                 <h2>Portal do Processo Seletivo</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($processo_total); ?></strong></p>
                 <canvas id="chartProcessoStatus"></canvas>
                 <p>SLA Médio: <?php echo $processo_sla; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($processo_sla_anterior > 0 && $processo_sla < $processo_sla_anterior) ? 'positivo' : (($processo_sla_anterior > 0) ? 'negativo' : 'neutro'); ?>">
@@ -718,6 +738,7 @@ function getSLAClass($sla) {
 
             <section id="secretaria" class="resumo-portal <?php echo getSLAClass($secretaria_tempo); ?>">
                 <h2>Portal da Secretaria Acadêmica</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($secretaria_total); ?></strong></p>
                 <canvas id="chartSecretariaStatus"></canvas>
                 <p>Tempo Médio: <?php echo $secretaria_tempo; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($secretaria_tempo_anterior > 0 && $secretaria_tempo < $secretaria_tempo_anterior) ? 'positivo' : (($secretaria_tempo_anterior > 0) ? 'negativo' : 'neutro'); ?>">
@@ -735,6 +756,7 @@ function getSLAClass($sla) {
 
             <section id="financeiro" class="resumo-portal <?php echo getSLAClass($financeiro_sla); ?>">
                 <h2>Portal Financeiro</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($financeiro_total); ?></strong></p>
                 <canvas id="chartFinanceiroStatus"></canvas>
                 <p>SLA Médio: <?php echo $financeiro_sla; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($financeiro_sla_anterior > 0 && $financeiro_sla < $financeiro_sla_anterior) ? 'positivo' : (($financeiro_sla_anterior > 0) ? 'negativo' : 'neutro'); ?>">
@@ -752,6 +774,7 @@ function getSLAClass($sla) {
 
             <section id="exaluno" class="resumo-portal <?php echo getSLAClass($exaluno_sla); ?>">
                 <h2>Portal do Ex-Aluno</h2>
+                <p><strong>Total de Chamados: <?php echo number_format($exaluno_total); ?></strong></p>
                 <canvas id="chartExAlunoStatus"></canvas>
                 <p>SLA Médio: <?php echo $exaluno_sla; ?> dias</p>
                 <p class="comparativo-mes <?php echo ($exaluno_sla_anterior > 0 && $exaluno_sla < $exaluno_sla_anterior) ? 'positivo' : (($exaluno_sla_anterior > 0) ? 'negativo' : 'neutro'); ?>">

@@ -128,4 +128,16 @@ function getServicosSolicitadosFinanceiroFiltered($periodo) {
         return [];
     }
 }
+
+function getTotalChamadosFinanceiro() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_FINANCEIRO);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
 ?>

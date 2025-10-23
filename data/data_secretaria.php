@@ -102,4 +102,16 @@ function getServicosSolicitadosSecretariaFiltered($periodo) {
         return [];
     }
 }
+
+function getTotalChamadosSecretaria() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('secretaria'));
+        $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_SECRETARIA);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
 ?>
