@@ -1174,6 +1174,13 @@ function getSLAClass($sla) {
                                 <div class="col-md-6">
                                     <strong>Data de Fechamento:</strong> ${formatarData(chamado.data_fechamento)}
                                 </div>
+                                ${chamado.usuario_admin || chamado.admin_nome || chamado.usuario_responsavel || chamado.responsavel_nome || chamado.email_admin || chamado.email_responsavel ? `
+                                <div class="col-md-6">
+                                    <strong>Administrador Responsável:</strong><br>
+                                    ${chamado.usuario_admin || chamado.admin_nome || chamado.usuario_responsavel || chamado.responsavel_nome || 'N/A'}<br>
+                                    ${chamado.email_admin || chamado.email_responsavel ? `<small class="text-muted">${chamado.email_admin || chamado.email_responsavel}</small>` : ''}
+                                </div>
+                                ` : ''}
                             </div>
                             ` : ''}
                             ${chamado.descricao ? `
