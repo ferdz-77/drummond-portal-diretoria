@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/filter_helpers.php';
 
 function getChamadosStatusFinanceiro() {
     try {
-        $pdo = connectDBEnvironment('financeiro');
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
         $stmt = $pdo->query("SELECT 
             CASE 
                 WHEN " . COL_STATUS_FINANCEIRO . " = '' OR " . COL_STATUS_FINANCEIRO . " IS NULL THEN 'Não informado'

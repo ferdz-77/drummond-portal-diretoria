@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/filter_helpers.php';
 
 function getChamadosStatusEAD() {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $stmt = $pdo->query("SELECT 
             CASE 
                 WHEN " . COL_STATUS_EAD . " = '' OR " . COL_STATUS_EAD . " IS NULL THEN 'Não informado'
@@ -26,7 +26,7 @@ function getChamadosStatusEAD() {
 
 function getSLAMedioEAD() {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EAD . ", " . COL_DATA_ABERTURA_EAD . ")) as sla_medio FROM " . TABLE_EAD . " WHERE " . COL_DATA_FECHAMENTO_EAD . " IS NOT NULL AND " . COL_STATUS_EAD . " = 'finalizado'");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -38,7 +38,7 @@ function getSLAMedioEAD() {
 
 function getSLAMedioEADMesAnterior() {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EAD . ", " . COL_DATA_ABERTURA_EAD . ")) as sla_medio FROM " . TABLE_EAD . " WHERE " . COL_DATA_FECHAMENTO_EAD . " IS NOT NULL AND " . COL_STATUS_EAD . " = 'Fechado' AND MONTH(" . COL_DATA_FECHAMENTO_EAD . ") = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(" . COL_DATA_FECHAMENTO_EAD . ") = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -49,7 +49,7 @@ function getSLAMedioEADMesAnterior() {
 }
 
 function getServicosSolicitadosEAD() {
-    $pdo = connectDBEnvironment('ead');
+    $pdo = connectDB(getProductionDatabaseName('ead'));
     try {
         $stmt = $pdo->query("SELECT 
             CASE 
@@ -73,7 +73,7 @@ function getServicosSolicitadosEAD() {
 // Funções filtradas por período
 function getChamadosStatusEADFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_EAD);
         $stmt = $pdo->query("SELECT 
             CASE 
@@ -96,7 +96,7 @@ function getChamadosStatusEADFiltered($periodo) {
 
 function getSLAMedioEADFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_FECHAMENTO_EAD);
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_EAD . ", " . COL_DATA_ABERTURA_EAD . ")) as sla_medio FROM " . TABLE_EAD . " WHERE " . COL_DATA_FECHAMENTO_EAD . " IS NOT NULL AND " . COL_STATUS_EAD . " = 'Fechado'" . $whereClause);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -108,7 +108,7 @@ function getSLAMedioEADFiltered($periodo) {
 
 function getServicosSolicitadosEADFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('ead');
+        $pdo = connectDB(getProductionDatabaseName('ead'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_EAD);
         $stmt = $pdo->query("SELECT 
             CASE 

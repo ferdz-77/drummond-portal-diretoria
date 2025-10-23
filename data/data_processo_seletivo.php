@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/filter_helpers.php';
 
 function getSLAMedioProcessoSeletivoMesAnterior() {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_PROCESSO . ", " . COL_DATA_ABERTURA_PROCESSO . ")) as sla_medio FROM " . TABLE_PROCESSO . " WHERE " . COL_DATA_FECHAMENTO_PROCESSO . " IS NOT NULL AND " . COL_STATUS_PROCESSO . " = 'Fechado' AND MONTH(" . COL_DATA_FECHAMENTO_PROCESSO . ") = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(" . COL_DATA_FECHAMENTO_PROCESSO . ") = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -16,7 +16,7 @@ function getSLAMedioProcessoSeletivoMesAnterior() {
 
 function getChamadosStatusProcessoSeletivo() {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $stmt = $pdo->query("SELECT 
             CASE 
                 WHEN " . COL_STATUS_PROCESSO . " = '' OR " . COL_STATUS_PROCESSO . " IS NULL THEN 'Não informado'
@@ -38,7 +38,7 @@ function getChamadosStatusProcessoSeletivo() {
 
 function getSLAMedioProcessoSeletivo() {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_PROCESSO . ", " . COL_DATA_ABERTURA_PROCESSO . ")) as sla_medio FROM " . TABLE_PROCESSO . " WHERE " . COL_DATA_FECHAMENTO_PROCESSO . " IS NOT NULL AND " . COL_STATUS_PROCESSO . " = 'finalizado'");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -49,7 +49,7 @@ function getSLAMedioProcessoSeletivo() {
 }
 
 function getServicosSolicitadosProcessoSeletivo() {
-    $pdo = connectDBEnvironment('processo_seletivo');
+    $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
     try {
         $stmt = $pdo->query("SELECT 
             CASE 
@@ -73,7 +73,7 @@ function getServicosSolicitadosProcessoSeletivo() {
 // Funções filtradas por período
 function getChamadosStatusProcessoSeletivoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_PROCESSO);
         $stmt = $pdo->query("SELECT 
             CASE 
@@ -96,7 +96,7 @@ function getChamadosStatusProcessoSeletivoFiltered($periodo) {
 
 function getSLAMedioProcessoSeletivoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_FECHAMENTO_PROCESSO);
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_PROCESSO . ", " . COL_DATA_ABERTURA_PROCESSO . ")) as sla_medio FROM " . TABLE_PROCESSO . " WHERE " . COL_DATA_FECHAMENTO_PROCESSO . " IS NOT NULL AND " . COL_STATUS_PROCESSO . " = 'Fechado'" . $whereClause);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -108,7 +108,7 @@ function getSLAMedioProcessoSeletivoFiltered($periodo) {
 
 function getServicosSolicitadosProcessoSeletivoFiltered($periodo) {
     try {
-        $pdo = connectDBEnvironment('processo_seletivo');
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
         $whereClause = getPeriodWhereClause($periodo, COL_DATA_ABERTURA_PROCESSO);
         $stmt = $pdo->query("SELECT 
             CASE 

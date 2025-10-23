@@ -4,7 +4,7 @@ require_once __DIR__ . '/../includes/filter_helpers.php';
 
 function getChamadosStatusOuvidoria() {
     try {
-        $pdo = connectDBEnvironment('ouvidoria');
+        $pdo = connectDB(getProductionDatabaseName('ouvidoria'));
         $stmt = $pdo->query("SELECT " . COL_STATUS_OUVIDORIA . ", COUNT(*) as count FROM " . TABLE_OUVIDORIA . " GROUP BY " . COL_STATUS_OUVIDORIA);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
@@ -15,7 +15,7 @@ function getChamadosStatusOuvidoria() {
 
 function getSLAMedioOuvidoria() {
     try {
-        $pdo = connectDBEnvironment('ouvidoria');
+        $pdo = connectDB(getProductionDatabaseName('ouvidoria'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_OUVIDORIA . ", " . COL_DATA_ABERTURA_OUVIDORIA . ")) as sla_medio FROM " . TABLE_OUVIDORIA . " WHERE " . COL_DATA_FECHAMENTO_OUVIDORIA . " IS NOT NULL AND " . COL_STATUS_OUVIDORIA . " = 'Transferido'");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -27,7 +27,7 @@ function getSLAMedioOuvidoria() {
 
 function getSLAMedioOuvidoriaMesAnterior() {
     try {
-        $pdo = connectDBEnvironment('ouvidoria');
+        $pdo = connectDB(getProductionDatabaseName('ouvidoria'));
         $stmt = $pdo->query("SELECT AVG(DATEDIFF(" . COL_DATA_FECHAMENTO_OUVIDORIA . ", " . COL_DATA_ABERTURA_OUVIDORIA . ")) as sla_medio FROM " . TABLE_OUVIDORIA . " WHERE " . COL_DATA_FECHAMENTO_OUVIDORIA . " IS NOT NULL AND " . COL_STATUS_OUVIDORIA . " = 'Fechado' AND MONTH(" . COL_DATA_FECHAMENTO_OUVIDORIA . ") = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(" . COL_DATA_FECHAMENTO_OUVIDORIA . ") = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['sla_medio'] ? round($result['sla_medio'], 1) : 0;
@@ -39,7 +39,7 @@ function getSLAMedioOuvidoriaMesAnterior() {
 
 function getTiposManifestacaoOuvidoria() {
     try {
-        $pdo = connectDBEnvironment('ouvidoria');
+        $pdo = connectDB(getProductionDatabaseName('ouvidoria'));
         $stmt = $pdo->query("SELECT " . COL_TIPO_OUVIDORIA . ", COUNT(*) as count FROM " . TABLE_OUVIDORIA . " GROUP BY " . COL_TIPO_OUVIDORIA);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
