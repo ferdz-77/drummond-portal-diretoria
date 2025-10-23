@@ -131,28 +131,94 @@ function connectPortalDiretoria() {
 // Função para conectar a um banco específico (compatível com código antigo)
 if (!function_exists('connectDB')) {
     function connectDB($dbname) {
-        // Mapeamento de nomes de bancos para desenvolvimento
-        $dev_db_mapping = [
-            'portal_ouvidoria' => 'portal_ouvidoria',
-            'portal_ead' => 'portal_ead',
-            'portal_processo_seletivo' => 'portal_processo_seletivo',
-            'portal_secretaria_academica' => 'portal_secretaria_academica',
-            'portal_financeiro' => 'portal_financeiro',
-            'portal_exaluno' => 'portal_exaluno',
-            'portal_diretoria' => 'portal_diretoria'
-        ];
+        global $environment;
+        
+        if ($environment === 'production') {
+            // Credenciais específicas por banco para produção
+            $db_credentials = [
+                'bdsolicita_atendimento' => [
+                    'host' => 'localhost',
+                    'user' => 'bdsolatend',
+                    'pass' => 'opqwioihjOHUQHOQWNNA234',
+                    'dbname' => 'bdsolicita_atendimento'
+                ],
+                'dbead' => [
+                    'host' => 'localhost',
+                    'user' => 'eaduseroot',
+                    'pass' => 'OPHFQOIfOHOUHOou-039-',
+                    'dbname' => 'dbead'
+                ],
+                'pseldb' => [
+                    'host' => 'localhost',
+                    'user' => 'pseluserdb',
+                    'pass' => 'gpoaGGWOIJW5874ajds123478',
+                    'dbname' => 'pseldb'
+                ],
+                'dbsecretacad' => [
+                    'host' => 'localhost',
+                    'user' => 'dbsecretacaduser',
+                    'pass' => 'agkljUHP79654AJjosh27Y616',
+                    'dbname' => 'dbsecretacad'
+                ],
+                'fini' => [
+                    'host' => 'localhost',
+                    'user' => 'userfinidb',
+                    'pass' => 'AJHPFGiuhpuwh093876524yr',
+                    'dbname' => 'fini'
+                ],
+                'dbgproto' => [
+                    'host' => 'localhost',
+                    'user' => 'usergprotoc',
+                    'pass' => '8092QNSANSnjlaskn0u2Jjhoiq02',
+                    'dbname' => 'dbgproto'
+                ]
+            ];
 
-        $actual_dbname = $dev_db_mapping[$dbname] ?? $dbname;
-        $host = 'localhost';
-        $user = 'root';
-        $pass = '';
+            // Encontrar as credenciais do banco específico
+            $credenciais = null;
+            foreach ($db_credentials as $db_name => $creds) {
+                if ($creds['dbname'] === $dbname) {
+                    $credenciais = $creds;
+                    break;
+                }
+            }
 
-        try {
-            $pdo = new PDO("mysql:host=$host;dbname=$actual_dbname;charset=utf8", $user, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $pdo;
-        } catch (PDOException $e) {
-            throw new Exception("Erro de conexão PDO para $dbname: " . $e->getMessage());
+            if (!$credenciais) {
+                throw new Exception("Credenciais não encontradas para o banco: $dbname");
+            }
+
+            try {
+                $pdo = new PDO("mysql:host={$credenciais['host']};dbname={$credenciais['dbname']};charset=utf8",
+                              $credenciais['user'], $credenciais['pass']);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                return $pdo;
+            } catch (PDOException $e) {
+                throw new Exception("Erro de conexão PDO para $dbname: " . $e->getMessage());
+            }
+        } else {
+            // Desenvolvimento - usar credenciais padrão
+            $dev_db_mapping = [
+                'portal_ouvidoria' => 'portal_ouvidoria',
+                'portal_ead' => 'portal_ead',
+                'portal_processo_seletivo' => 'portal_processo_seletivo',
+                'portal_secretaria_academica' => 'portal_secretaria_academica',
+                'portal_financeiro' => 'portal_financeiro',
+                'portal_exaluno' => 'portal_exaluno',
+                'portal_diretoria' => 'portal_diretoria'
+            ];
+
+            $actual_dbname = $dev_db_mapping[$dbname] ?? $dbname;
+            $host = 'localhost';
+            $user = 'root';
+            $pass = '';
+
+            try {
+                $pdo = new PDO("mysql:host=$host;dbname=$actual_dbname;charset=utf8", $user, $pass);
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                return $pdo;
+            } catch (PDOException $e) {
+                throw new Exception("Erro de conexão PDO para $dbname: " . $e->getMessage());
+            }
         }
     }
 }

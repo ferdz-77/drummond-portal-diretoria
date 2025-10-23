@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario_logado'])) {
 }
 
 // Incluir arquivo de configuração
-require_once 'includes/config.php';
+require_once 'includes/config_env_simplificado.php';
 
 // Verificar se foi passado o ID do chamado
 if (!isset($_POST['chamado_id']) || empty($_POST['chamado_id'])) {
@@ -24,12 +24,12 @@ try {
     // Buscar dados do chamado de todas as bases possíveis
     $chamado = null;
     $databases = [
-        'portal_ouvidoria' => 'Ouvidoria',
-        'portal_ead' => 'Ead',
-        'portal_processo_seletivo' => 'Processo_seletivo',
-        'portal_secretaria_academica' => 'Secretaria',
-        'portal_financeiro' => 'Financeiro',
-        'portal_exaluno' => 'Exaluno'
+        'bdsolicita_atendimento' => 'Ouvidoria',
+        'dbead' => 'EAD',
+        'pseldb' => 'Processo Seletivo',
+        'dbsecretacad' => 'Secretaria',
+        'fini' => 'Financeiro',
+        'dbgproto' => 'Ex-Aluno'
     ];
 
     foreach ($databases as $db_name => $portal_name) {

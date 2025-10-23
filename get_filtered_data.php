@@ -211,7 +211,9 @@ function getAllChamados($portal_filter = 'todos', $status_filter = 'todos', $pag
         // Buscar dados de cada portal
         foreach ($portais as $portal_nome => $config) {
             try {
-                $pdo = connectDB($config['conn']);
+                // Usar o nome correto do banco de dados baseado no ambiente
+                $db_name = getProductionDatabaseName($config['conn']);
+                $pdo = connectDB($db_name);
 
                 // Construir query
                 $where_clauses = [];

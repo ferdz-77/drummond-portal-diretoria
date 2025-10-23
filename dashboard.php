@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// DEBUG: Forçar exibição de erros
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
 // Configurar tratamento de erro para produção
 $currentEnv = $_ENV['APP_ENV'] ?? getenv('APP_ENV');
 if ($currentEnv === 'production') {
@@ -517,6 +522,132 @@ function getSLAClass($sla) {
             </button>
         </div>
 
+        <?php
+        // Obter últimos 100 chamados de todos os portais (sempre executado)
+        $todos_chamados = [];
+
+        try {
+            // Buscar dados de cada portal individualmente (mais confiável que cross-database)
+
+            // Ouvidoria
+            try {
+                $conn_ouvidoria = connectDB(getProductionDatabaseName('ouvidoria'));
+                $query_ouvidoria = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Ouvidoria' as portal
+                                   FROM chamados
+                                   ORDER BY data_abertura DESC LIMIT 100";
+                $result_ouvidoria = $conn_ouvidoria->query($query_ouvidoria);
+                if ($result_ouvidoria) {
+                    $count_ouv = 0;
+                    while ($row = $result_ouvidoria->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ouv++;
+                    }
+                }
+                $conn_ouvidoria = null;
+            } catch (Exception $e) {
+            }
+
+            // EAD
+            try {
+                $conn_ead = connectDB(getProductionDatabaseName('ead'));
+                $query_ead = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'EAD' as portal
+                             FROM chamados
+                             ORDER BY data_abertura DESC LIMIT 100";
+                $result_ead = $conn_ead->query($query_ead);
+                if ($result_ead) {
+                    $count_ead = 0;
+                    while ($row = $result_ead->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ead++;
+                    }
+                }
+                $conn_ead = null;
+            } catch (Exception $e) {
+            }
+
+            // Processo Seletivo
+            try {
+                $conn_processo = connectDB(getProductionDatabaseName('processo_seletivo'));
+                $query_processo = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'Processo Seletivo' as portal
+                                  FROM chamados
+                                  ORDER BY data_abertura DESC LIMIT 100";
+                $result_processo = $conn_processo->query($query_processo);
+                if ($result_processo) {
+                    $count_proc = 0;
+                    while ($row = $result_processo->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_proc++;
+                    }
+                }
+                $conn_processo = null;
+            } catch (Exception $e) {
+            }
+
+            // Secretaria
+            try {
+                $conn_secretaria = connectDB(getProductionDatabaseName('secretaria'));
+                $query_secretaria = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Secretaria' as portal
+                                    FROM chamados
+                                    ORDER BY data_abertura DESC LIMIT 100";
+                $result_secretaria = $conn_secretaria->query($query_secretaria);
+                if ($result_secretaria) {
+                    $count_sec = 0;
+                    while ($row = $result_secretaria->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_sec++;
+                    }
+                }
+                $conn_secretaria = null;
+            } catch (Exception $e) {
+            }
+
+            // Financeiro
+            try {
+                $conn_financeiro = connectDB(getProductionDatabaseName('financeiro'));
+                $query_financeiro = "SELECT id, categoria as assunto, status, data_abertura as data_criacao, 'Financeiro' as portal
+                                    FROM chamados
+                                    ORDER BY data_abertura DESC LIMIT 20";
+                $result_financeiro = $conn_financeiro->query($query_financeiro);
+                if ($result_financeiro) {
+                    $count_fin = 0;
+                    while ($row = $result_financeiro->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_fin++;
+                    }
+                }
+                $conn_financeiro = null;
+            } catch (Exception $e) {
+            }
+
+            // Ex-Aluno
+            try {
+                $conn_exaluno = connectDB(getProductionDatabaseName('exaluno'));
+                $query_exaluno = "SELECT id, descricao as assunto, status, data_abertura as data_criacao, 'Ex-Aluno' as portal
+                                 FROM chamados
+                                 ORDER BY data_abertura DESC LIMIT 100";
+                $result_exaluno = $conn_exaluno->query($query_exaluno);
+                if ($result_exaluno) {
+                    $count_ex = 0;
+                    while ($row = $result_exaluno->fetch(PDO::FETCH_ASSOC)) {
+                        $todos_chamados[] = $row;
+                        $count_ex++;
+                    }
+                }
+                $conn_exaluno = null;
+            } catch (Exception $e) {
+            }
+
+            // Ordenar todos os chamados por data e limitar a 100 (últimos de todos os portais)
+            usort($todos_chamados, function($a, $b) {
+                return strtotime($b['data_criacao']) - strtotime($a['data_criacao']);
+            });
+            $todos_chamados = array_slice($todos_chamados, 0, 100);
+
+        } catch (Exception $e) {
+            $todos_chamados = [];
+        }
+        ?>
+
         <!-- Abas de navegação -->
         <div class="tabs">
             <button class="tab-button <?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'active' : ''; ?>" data-tab="consolidado">Visão Consolidada</button>
@@ -701,98 +832,6 @@ function getSLAClass($sla) {
                             </thead>
                             <tbody id="chamadosTableBody">
                                 <?php
-                                // Obter últimos 100 chamados de todos os portais
-                                $todos_chamados = [];
-                                
-                                try {
-                                    // Usar conexão multi-banco que pode acessar todos os portais
-                                    $conn = connectDBMulti();
-                                    
-                                    // Ouvidoria
-                                    $db_ouvidoria = getProductionDatabaseName('ouvidoria');
-                                    $query_ouvidoria = "SELECT id, titulo as assunto, status, data_criacao, 'Ouvidoria' as portal 
-                                                       FROM {$db_ouvidoria}.chamados 
-                                                       ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_ouvidoria = $conn->query($query_ouvidoria);
-                                    if ($result_ouvidoria) {
-                                        while ($row = $result_ouvidoria->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // EAD
-                                    $db_ead = getProductionDatabaseName('ead');
-                                    $query_ead = "SELECT id, assunto, status, data_abertura as data_criacao, 'EAD' as portal 
-                                                 FROM {$db_ead}.solicitacoes 
-                                                 ORDER BY data_abertura DESC LIMIT 20";
-                                    $result_ead = $conn->query($query_ead);
-                                    if ($result_ead) {
-                                        while ($row = $result_ead->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Processo Seletivo
-                                    $db_processo = getProductionDatabaseName('processo_seletivo');
-                                    $query_processo = "SELECT id, descricao as assunto, status, data_criacao, 'Processo Seletivo' as portal 
-                                                      FROM {$db_processo}.chamados 
-                                                      ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_processo = $conn->query($query_processo);
-                                    if ($result_processo) {
-                                        while ($row = $result_processo->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Secretaria
-                                    $db_secretaria = getProductionDatabaseName('secretaria');
-                                    $query_secretaria = "SELECT id, descricao as assunto, status, data_solicitacao as data_criacao, 'Secretaria' as portal 
-                                                        FROM {$db_secretaria}.solicitacoes 
-                                                        ORDER BY data_solicitacao DESC LIMIT 20";
-                                    $result_secretaria = $conn->query($query_secretaria);
-                                    if ($result_secretaria) {
-                                        while ($row = $result_secretaria->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Financeiro
-                                    $db_financeiro = getProductionDatabaseName('financeiro');
-                                    $query_financeiro = "SELECT id, assunto, status, data_abertura as data_criacao, 'Financeiro' as portal 
-                                                        FROM {$db_financeiro}.tickets 
-                                                        ORDER BY data_abertura DESC LIMIT 20";
-                                    $result_financeiro = $conn->query($query_financeiro);
-                                    if ($result_financeiro) {
-                                        while ($row = $result_financeiro->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Ex-Aluno
-                                    $db_exaluno = getProductionDatabaseName('exaluno');
-                                    $query_exaluno = "SELECT id, titulo as assunto, status, data_criacao, 'Ex-Aluno' as portal 
-                                                     FROM {$db_exaluno}.solicitacoes 
-                                                     ORDER BY data_criacao DESC LIMIT 20";
-                                    $result_exaluno = $conn->query($query_exaluno);
-                                    if ($result_exaluno) {
-                                        while ($row = $result_exaluno->fetch_assoc()) {
-                                            $todos_chamados[] = $row;
-                                        }
-                                    }
-                                    
-                                    // Ordenar todos os chamados por data e limitar a 100
-                                    usort($todos_chamados, function($a, $b) {
-                                        return strtotime($b['data_criacao']) - strtotime($a['data_criacao']);
-                                    });
-                                    $todos_chamados = array_slice($todos_chamados, 0, 100);
-                                    
-                                    $conn->close();
-                                    
-                                } catch (Exception $e) {
-                                    error_log("Erro ao buscar chamados: " . $e->getMessage());
-                                    $todos_chamados = [];
-                                }
-                                
                                 if (count($todos_chamados) > 0):
                                     foreach ($todos_chamados as $chamado):
                                         $status_class = '';
@@ -817,7 +856,7 @@ function getSLAClass($sla) {
                                     <td><?php echo date('d/m/Y H:i', strtotime($chamado['data_criacao'])); ?></td>
                                     <td>-</td>
                                     <td><?php echo htmlspecialchars(substr($chamado['assunto'], 0, 50)) . (strlen($chamado['assunto']) > 50 ? '...' : ''); ?></td>
-                                    <td><button class="btn btn-sm btn-outline-primary">Ver</button></td>
+                                    <td><button class="btn btn-sm btn-outline-primary btn-ver-chamado" data-chamado-id="<?php echo $chamado['id']; ?>" data-portal="<?php echo $chamado['portal']; ?>">Ver</button></td>
                                 </tr>
                                 <?php 
                                     endforeach;
@@ -1059,6 +1098,138 @@ function getSLAClass($sla) {
                 });
             });
         });
+
+        // Sistema de detalhes de chamados
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener para botões "Ver" dos chamados
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('btn-ver-chamado')) {
+                    const chamadoId = event.target.getAttribute('data-chamado-id');
+                    const portal = event.target.getAttribute('data-portal');
+
+                    if (chamadoId) {
+                        carregarDetalhesChamado(chamadoId, portal);
+                    }
+                }
+            });
+        });
+
+        // Função para carregar detalhes do chamado
+        function carregarDetalhesChamado(chamadoId, portal) {
+            const modal = new bootstrap.Modal(document.getElementById('chamadoModal'));
+            const modalContent = document.getElementById('chamadoModalContent');
+
+            // Mostrar loading
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2">Carregando detalhes do chamado...</p>
+                </div>
+            `;
+
+            modal.show();
+
+            // Fazer requisição AJAX
+            const formData = new FormData();
+            formData.append('chamado_id', chamadoId);
+
+            fetch('get_chamado_detalhes.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Exibir detalhes do chamado
+                    const chamado = data.chamado;
+                    modalContent.innerHTML = `
+                        <div class="chamado-details">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>ID do Chamado:</strong> ${chamado.id}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Portal:</strong> <span class="badge bg-primary">${portal}</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Status:</strong>
+                                    <span class="badge ${getStatusClass(chamado.status)}">${chamado.status}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Data de Abertura:</strong> ${formatarData(chamado.data_abertura)}
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <strong>Assunto/Serviço:</strong><br>
+                                    ${chamado.assunto || chamado.categoria || chamado.descricao || 'N/A'}
+                                </div>
+                            </div>
+                            ${chamado.data_fechamento ? `
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Data de Fechamento:</strong> ${formatarData(chamado.data_fechamento)}
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${chamado.descricao ? `
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <strong>Descrição:</strong><br>
+                                    ${chamado.descricao}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    modalContent.innerHTML = `
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Erro ao carregar detalhes do chamado: ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Erro na requisição:', error);
+                modalContent.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Erro na comunicação com o servidor. Tente novamente.
+                    </div>
+                `;
+            });
+        }
+
+        // Função auxiliar para classes de status
+        function getStatusClass(status) {
+            switch (status.toLowerCase()) {
+                case 'aberto':
+                    return 'bg-warning text-dark';
+                case 'em andamento':
+                    return 'bg-info';
+                case 'fechado':
+                case 'resolvido':
+                    return 'bg-success';
+                default:
+                    return 'bg-secondary';
+            }
+        }
+
+        // Função auxiliar para formatar datas
+        function formatarData(dataString) {
+            if (!dataString) return 'N/A';
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR') + ' ' + data.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
