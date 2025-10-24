@@ -151,6 +151,40 @@ if (ctxConsolidado) {
   });
 }
 
+// Gráfico Total de Chamados Consolidado - Distribuição por Status
+var ctxTotalChamados = document.getElementById("chartTotalChamados");
+if (ctxTotalChamados) {
+  ctxTotalChamados = ctxTotalChamados.getContext("2d");
+  
+  if (statusConsolidado.length > 0) {
+    var labelsTotal = statusConsolidado.map((item) => item.status);
+    var dataTotal = statusConsolidado.map((item) => item.count);
+    
+    window.chartTotalChamados = new Chart(ctxTotalChamados, {
+      type: "pie",
+      data: {
+        labels: labelsTotal,
+        datasets: [
+          {
+            data: dataTotal,
+            backgroundColor: getStatusColors(labelsTotal),
+            borderWidth: 2,
+            borderColor: '#ffffff',
+          },
+        ],
+      },
+      options: getPieChartOptions('Distribuição por Status'),
+    });
+  } else {
+    ctxTotalChamados.style.display = 'none';
+    const container = ctxTotalChamados.parentElement;
+    const noDataMsg = document.createElement('p');
+    noDataMsg.className = 'no-data';
+    noDataMsg.textContent = 'Nenhum dado encontrado.';
+    container.appendChild(noDataMsg);
+  }
+}
+
 // Ouvidoria
 var ctxOuvidoriaStatus = document.getElementById("chartOuvidoriaStatus");
 if (ctxOuvidoriaStatus) {

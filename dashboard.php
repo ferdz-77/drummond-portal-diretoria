@@ -178,6 +178,41 @@ try {
     $exaluno_total = 0;
 }
 
+// Calcular total consolidado e distribuição por status
+try {
+    $total_consolidado = $ouvidoria_total + $ead_total + $processo_total + $secretaria_total + $financeiro_total + $exaluno_total;
+    
+    // Agregar dados de status de todos os portais
+    $status_consolidado = [];
+    $all_status_data = [
+        'ouvidoria' => $ouvidoria_status_original,
+        'ead' => $ead_status_original,
+        'processo_seletivo' => $processo_status_original,
+        'secretaria' => $secretaria_status_original,
+        'financeiro' => $financeiro_status_original,
+        'exaluno' => $exaluno_status_original
+    ];
+    
+    foreach ($all_status_data as $portal => $status_data) {
+        foreach ($status_data as $status_item) {
+            $status_name = $status_item['status'];
+            if (!isset($status_consolidado[$status_name])) {
+                $status_consolidado[$status_name] = 0;
+            }
+            $status_consolidado[$status_name] += $status_item['count'];
+        }
+    }
+    
+    // Converter para array formatado para JavaScript
+    $status_consolidado_array = [];
+    foreach ($status_consolidado as $status => $count) {
+        $status_consolidado_array[] = ['status' => $status, 'count' => $count];
+    }
+} catch (Exception $e) {
+    $total_consolidado = 0;
+    $status_consolidado_array = [];
+}
+
 // Buscar dados para cada portal
 if ($portal_filter === 'todos') {
     if ($periodo_filter === 'todos') {
@@ -676,7 +711,15 @@ function getSLAClass($sla) {
         <div id="consolidado" class="tab-content <?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'active' : ''; ?>" aria-hidden="<?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'false' : 'true'; ?>">
             <section id="visao-consolidada">
                 <h2>Visão Consolidada</h2>
-                <canvas id="chartConsolidado"></canvas>
+                <div class="consolidado-container">
+                    <div class="consolidado-total">
+                        <h3>Total de Chamados: <?php echo number_format($total_consolidado); ?></h3>
+                        <canvas id="chartTotalChamados"></canvas>
+                    </div>
+                    <div class="consolidado-sla">
+                        <canvas id="chartConsolidado"></canvas>
+                    </div>
+                </div>
             </section>
         </div>
 
@@ -994,6 +1037,10 @@ function getSLAClass($sla) {
         var exalunoStatus = <?php echo json_encode($exaluno_status_original); ?>;
         var exalunoSLA = <?php echo $exaluno_sla_original; ?>;
         var exalunoServicos = <?php echo json_encode($exaluno_servicos_original); ?>;
+
+        // Dados consolidados para Visão Consolidada
+        var totalConsolidado = <?php echo $total_consolidado; ?>;
+        var statusConsolidado = <?php echo json_encode($status_consolidado_array); ?>;
     </script>
     <script src="js/dashboard.js?v=<?php echo time(); ?>"></script>
 

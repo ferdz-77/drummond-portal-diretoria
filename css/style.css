@@ -1324,3 +1324,51 @@ p {
   font-size: 0.875rem;
   border-radius: 0.375rem;
 }
+
+/* Estilos para Visão Consolidada */
+.consolidado-container {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.consolidado-total {
+  flex: 1;
+  text-align: center;
+}
+
+.consolidado-total h3 {
+  font-size: 24px;
+  color: #001830;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.consolidado-sla {
+  flex: 1;
+}
+
+#consolidado section h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #001830;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* Responsividade para Visão Consolidada */
+@media (max-width: 768px) {
+  .consolidado-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .consolidado-total h3 {
+    font-size: 20px;
+  }
+  
+  #consolidado section h2 {
+    font-size: 24px;
+  }
+}
