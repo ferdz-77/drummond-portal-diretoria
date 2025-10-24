@@ -65,7 +65,7 @@ function getPieChartOptions(title = '') {
 function getPieChartColors() {
   return [
     'rgba(255, 99, 132, 0.8)',
-    'rgba(54, 162, 235, 0.8)', 
+    'rgba(54, 162, 235, 0.8)',
     'rgba(255, 206, 86, 0.8)',
     'rgba(75, 192, 192, 0.8)',
     'rgba(153, 102, 255, 0.8)',
@@ -73,6 +73,36 @@ function getPieChartColors() {
     'rgba(201, 203, 207, 0.8)',
     'rgba(255, 99, 255, 0.8)'
   ];
+}
+
+// Cores específicas para status dos chamados
+function getStatusColors(labels) {
+  const statusColorMap = {
+    'Total': '#0dcaf0',
+    'Em Análise': '#dc3545',
+    'Respondido': '#626a72',
+    'Respondido Drummond': '#F25C05',
+    'Finalizado': '#0d6efd',
+    'Transferido': '#6f42c1'
+  };
+
+  return labels.map(label => {
+    // Procurar correspondência exata primeiro
+    if (statusColorMap[label]) {
+      return statusColorMap[label];
+    }
+
+    // Procurar correspondência parcial (case insensitive)
+    const lowerLabel = label.toLowerCase();
+    for (const [status, color] of Object.entries(statusColorMap)) {
+      if (lowerLabel.includes(status.toLowerCase()) || status.toLowerCase().includes(lowerLabel)) {
+        return color;
+      }
+    }
+
+    // Cor padrão se não encontrar correspondência
+    return '#6c757d';
+  });
 }
 
 // Gráfico Consolidado - Comparação de SLA
@@ -136,10 +166,7 @@ if (ctxOuvidoriaStatus) {
           {
             label: "Solicitações",
             data: dataOuvidoria,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsOuvidoria),
           },
         ],
       },
@@ -198,10 +225,7 @@ if (ctxEADStatus) {
           {
             label: "Solicitações",
             data: dataEAD,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsEAD),
           },
         ],
       },
@@ -262,10 +286,7 @@ if (ctxProcessoStatus) {
           {
             label: "Solicitações",
             data: dataProcesso,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsProcesso),
           },
         ],
       },
@@ -324,10 +345,7 @@ if (ctxSecretariaStatus) {
           {
             label: "Solicitações",
             data: dataSecretaria,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsSecretaria),
           },
         ],
       },
@@ -388,10 +406,7 @@ if (ctxFinanceiroStatus) {
           {
             label: "Solicitações",
             data: dataFinanceiro,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsFinanceiro),
           },
         ],
       },
@@ -450,10 +465,7 @@ if (ctxExAlunoStatus) {
           {
             label: "Solicitações",
             data: dataExAluno,
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-            ],
+            backgroundColor: getStatusColors(labelsExAluno),
           },
         ],
       },
