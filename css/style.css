@@ -20,7 +20,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -155,7 +155,7 @@ header {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin: 20px auto;
-  max-width: 1200px;
+  max-width: 1400px;
   display: flex;
   gap: 20px;
   align-items: center;
@@ -326,16 +326,22 @@ p {
 }
 
 #visao-consolidada canvas {
-  max-width: 800px;
-  height: 260px;
+  max-width: 100%;
+  height: 500px;
   margin: 5px auto;
   display: block;
+}
+
+#chartChamadosPorPortal {
+  width: 100% !important;
+  height: 400px !important;
+  max-width: 600px;
 }
 
 /* Layout para os portais */
 #portais {
   padding: 0 16px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -602,7 +608,7 @@ p {
 .tab-content {
   display: none;
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -1326,10 +1332,18 @@ p {
 }
 
 /* Estilos para Visão Consolidada */
-.consolidado-container {
+.consolidado-container-top {
   display: flex;
+  flex-direction: row;
   gap: 30px;
   align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.consolidado-container-bottom {
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
 }
 
@@ -1345,8 +1359,21 @@ p {
   font-weight: bold;
 }
 
-.consolidado-sla {
+.consolidado-portal {
   flex: 1;
+  text-align: center;
+}
+
+.consolidado-portal h3 {
+  font-size: 24px;
+  color: #001830;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.consolidado-sla {
+  width: 100%;
+  max-width: 1200px;
 }
 
 #consolidado section h2 {
@@ -1359,12 +1386,22 @@ p {
 
 /* Responsividade para Visão Consolidada */
 @media (max-width: 768px) {
-  .consolidado-container {
+  .consolidado-container-top {
     flex-direction: column;
     gap: 20px;
+    margin-bottom: 20px;
   }
   
-  .consolidado-total h3 {
+  .consolidado-container-bottom {
+    margin-top: 10px;
+  }
+  
+  .consolidado-sla {
+    max-width: 100%;
+  }
+  
+  .consolidado-total h3,
+  .consolidado-portal h3 {
     font-size: 20px;
   }
   

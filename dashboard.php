@@ -539,7 +539,7 @@ function getSLAClass($sla) {
 
     <main>
         <!-- Barra de Filtros -->
-        <div class="filters-bar">
+        <div class="filters-bar" id="mainFiltersBar" style="display: none;">
             <div class="filter-group">
                 <label for="periodFilter">Período:</label>
                 <select id="periodFilter">
@@ -711,11 +711,21 @@ function getSLAClass($sla) {
         <div id="consolidado" class="tab-content <?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'active' : ''; ?>" aria-hidden="<?php echo (($_GET['tab'] ?? 'consolidado') === 'consolidado') ? 'false' : 'true'; ?>">
             <section id="visao-consolidada">
                 <h2>Visão Consolidada</h2>
-                <div class="consolidado-container">
+                
+                <!-- Primeira linha: Gráfico Pizza + Gráfico por Portal -->
+                <div class="consolidado-container-top">
                     <div class="consolidado-total">
                         <h3>Total de Chamados: <?php echo number_format($total_consolidado); ?></h3>
                         <canvas id="chartTotalChamados"></canvas>
                     </div>
+                    <div class="consolidado-portal">
+                        <h3>Chamados por Portal</h3>
+                        <canvas id="chartChamadosPorPortal"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Segunda linha: Gráfico de SLA -->
+                <div class="consolidado-container-bottom">
                     <div class="consolidado-sla">
                         <canvas id="chartConsolidado"></canvas>
                     </div>
@@ -1041,6 +1051,16 @@ function getSLAClass($sla) {
         // Dados consolidados para Visão Consolidada
         var totalConsolidado = <?php echo $total_consolidado; ?>;
         var statusConsolidado = <?php echo json_encode($status_consolidado_array); ?>;
+        
+        // Totais por portal para gráfico de barras
+        var totaisPorPortal = {
+            'Ouvidoria': <?php echo $ouvidoria_total; ?>,
+            'EAD': <?php echo $ead_total; ?>,
+            'Processo Seletivo': <?php echo $processo_total; ?>,
+            'Secretaria': <?php echo $secretaria_total; ?>,
+            'Financeiro': <?php echo $financeiro_total; ?>,
+            'Ex-Aluno': <?php echo $exaluno_total; ?>
+        };
     </script>
     <script src="js/dashboard.js?v=<?php echo time(); ?>"></script>
 

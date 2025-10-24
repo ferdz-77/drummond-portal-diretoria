@@ -396,6 +396,14 @@ body {
   border-radius: 2px;
 }
 
+/* Estilos específicos para os canvas dos gráficos */
+.chart-container canvas {
+  max-width: 100% !important;
+  height: 400px !important;
+  display: block;
+  margin: 0 auto;
+}
+
 /* Status Overview - Design Moderno */
 .status-overview {
   display: grid;

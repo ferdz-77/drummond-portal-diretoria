@@ -185,6 +185,51 @@ if (ctxTotalChamados) {
   }
 }
 
+// Gráfico de Barras - Chamados por Portal
+var ctxChamadosPorPortal = document.getElementById("chartChamadosPorPortal");
+if (ctxChamadosPorPortal) {
+  ctxChamadosPorPortal = ctxChamadosPorPortal.getContext("2d");
+  
+  // Usar dados reais se disponíveis, senão usar dados padrão
+  var chartData = {
+    labels: ["Ouvidoria", "EAD", "Processo Seletivo", "Secretaria", "Financeiro", "Ex-Aluno"],
+    data: [0, 0, 0, 0, 0, 0] // Valores padrão
+  };
+  
+  if (typeof totaisPorPortal !== 'undefined' && totaisPorPortal) {
+    chartData.data = [
+      totaisPorPortal['Ouvidoria'] || 0,
+      totaisPorPortal['EAD'] || 0,
+      totaisPorPortal['Processo Seletivo'] || 0,
+      totaisPorPortal['Secretaria'] || 0,
+      totaisPorPortal['Financeiro'] || 0,
+      totaisPorPortal['Ex-Aluno'] || 0
+    ];
+  }
+  
+  window.chartChamadosPorPortal = new Chart(ctxChamadosPorPortal, {
+    type: "bar",
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        label: "Chamados",
+        data: chartData.data,
+        backgroundColor: "#001830",
+        borderColor: "#ff5b00",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
 // Ouvidoria
 var ctxOuvidoriaStatus = document.getElementById("chartOuvidoriaStatus");
 if (ctxOuvidoriaStatus) {
