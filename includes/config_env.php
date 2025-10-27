@@ -148,13 +148,13 @@ define('COL_SERVICO_FINANCEIRO', 'categoria');
 define('COL_DESCRICAO_FINANCEIRO', 'descricao');
 
 // Ex-Aluno
-define('TABLE_EXALUNO', 'chamados');
+define('TABLE_EXALUNO', $environment === 'production' ? 'doc_solicitacoes_documentos' : 'chamados');
 define('COL_ID_EXALUNO', 'id');
 define('COL_STATUS_EXALUNO', 'status');
-define('COL_DATA_ABERTURA_EXALUNO', 'data_abertura');
+define('COL_DATA_ABERTURA_EXALUNO', $environment === 'production' ? 'data_solicitacao' : 'data_abertura');
 define('COL_DATA_FECHAMENTO_EXALUNO', 'data_encerramento');
-define('COL_SERVICO_EXALUNO', 'manifestacao');
-define('COL_DESCRICAO_EXALUNO', 'descricao');
+define('COL_SERVICO_EXALUNO', $environment === 'production' ? 'documento_solicitado' : 'manifestacao');
+define('COL_DESCRICAO_EXALUNO', $environment === 'production' ? 'mensagem' : 'descricao');
 
 // Função para conectar a um DB específico (usando credenciais específicas)
 if (!function_exists('connectDB')) {
