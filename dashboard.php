@@ -356,14 +356,15 @@ if ($portal_filter === 'todos') {
 
 // Buscar notificações do usuário com tratamento de erro
 $notificacoes = [];
+$conn = null;
+$usuario_id = $_SESSION['usuario_id'] ?? 'admin'; // Assumir 'admin' se não definido
+
 try {
     $conn = connectPortalDiretoria();
-    $usuario_id = $_SESSION['usuario_id'] ?? 'admin'; // Assumir 'admin' se não definido
     $sql = "SELECT * FROM notificacoes WHERE usuario_id = ? AND lida = FALSE ORDER BY data DESC LIMIT 10";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$usuario_id]);
     $notificacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $conn = null; // Fechar conexão PDO
 } catch (Exception $e) {
     error_log("Erro ao buscar notificações: " . $e->getMessage());
     // Continuar sem notificações em caso de erro
@@ -428,11 +429,17 @@ if ($exaluno_sla > $limite_critico) {
     inserirNotificacao($conn, $usuario_id, $mensagem, 'warning');
 }
 
+// Fechar conexão após todas as notificações
 if (isset($conn) && $conn) {
-    $conn = null; // Fechar conexão PDO
+    $conn = null;
 }
 
 function inserirNotificacao($conn, $usuario_id, $mensagem, $tipo) {
+    // Validar que a conexão existe
+    if (!$conn) {
+        error_log("inserirNotificacao: Conexão PDO não está ativa");
+        return;
+    }
     // Verificar se notificação já existe hoje
     $sql_check = "SELECT id, email_enviado FROM notificacoes WHERE usuario_id = ? AND mensagem = ? AND DATE(data) = CURDATE()";
     $stmt_check = $conn->prepare($sql_check);
