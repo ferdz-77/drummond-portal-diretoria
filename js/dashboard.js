@@ -1,5 +1,18 @@
 // dashboard.js
 
+// Função helper para esconder canvas e mostrar mensagem de sem dados
+function hideCanvasAndShowNoData(canvasId, message = 'Nenhum dado encontrado para o período selecionado.') {
+  var canvas = document.getElementById(canvasId);
+  if (canvas) {
+    canvas.style.display = 'none';
+    const container = canvas.parentElement;
+    const noDataMsg = document.createElement('p');
+    noDataMsg.className = 'no-data';
+    noDataMsg.textContent = message;
+    container.appendChild(noDataMsg);
+  }
+}
+
 // Configuração padrão para gráficos pizza
 function getPieChartOptions(title = '') {
   return {
@@ -152,11 +165,10 @@ if (ctxConsolidado) {
 }
 
 // Gráfico Total de Chamados Consolidado - Distribuição por Status
-var ctxTotalChamados = document.getElementById("chartTotalChamados");
-if (ctxTotalChamados) {
-  ctxTotalChamados = ctxTotalChamados.getContext("2d");
-  
+var canvasTotalChamados = document.getElementById("chartTotalChamados");
+if (canvasTotalChamados) {
   if (statusConsolidado.length > 0) {
+    var ctxTotalChamados = canvasTotalChamados.getContext("2d");
     var labelsTotal = statusConsolidado.map((item) => item.status);
     var dataTotal = statusConsolidado.map((item) => item.count);
     
@@ -176,12 +188,7 @@ if (ctxTotalChamados) {
       options: getPieChartOptions('Distribuição por Status'),
     });
   } else {
-    ctxTotalChamados.style.display = 'none';
-    const container = ctxTotalChamados.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartTotalChamados");
   }
 }
 
@@ -231,10 +238,10 @@ if (ctxChamadosPorPortal) {
 }
 
 // Ouvidoria
-var ctxOuvidoriaStatus = document.getElementById("chartOuvidoriaStatus");
-if (ctxOuvidoriaStatus) {
+var canvasOuvidoriaStatus = document.getElementById("chartOuvidoriaStatus");
+if (canvasOuvidoriaStatus) {
   if (ouvidoriaStatus.length > 0) {
-    ctxOuvidoriaStatus = ctxOuvidoriaStatus.getContext("2d");
+    var ctxOuvidoriaStatus = canvasOuvidoriaStatus.getContext("2d");
     var labelsOuvidoria = ouvidoriaStatus.map((item) => item.status);
     var dataOuvidoria = ouvidoriaStatus.map((item) => item.count);
     window.chartOuvidoriaStatus = new Chart(ctxOuvidoriaStatus, {
@@ -251,19 +258,14 @@ if (ctxOuvidoriaStatus) {
       },
     });
   } else {
-    ctxOuvidoriaStatus.style.display = 'none';
-    const container = ctxOuvidoriaStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartOuvidoriaStatus");
   }
 }
 
-var ctxOuvidoriaTipos = document.getElementById("chartOuvidoriaTipos");
-if (ctxOuvidoriaTipos) {
+var canvasOuvidoriaTipos = document.getElementById("chartOuvidoriaTipos");
+if (canvasOuvidoriaTipos) {
   if (ouvidoriaTipos.length > 0) {
-    ctxOuvidoriaTipos = ctxOuvidoriaTipos.getContext("2d");
+    var ctxOuvidoriaTipos = canvasOuvidoriaTipos.getContext("2d");
     var labelsOuvidoriaTipos = ouvidoriaTipos.map((item) => item.manifestacao || item.tipo || item.categoria);
     var dataOuvidoriaTipos = ouvidoriaTipos.map((item) => item.count);
     window.chartOuvidoriaTipos = new Chart(ctxOuvidoriaTipos, {
@@ -280,20 +282,15 @@ if (ctxOuvidoriaTipos) {
       options: getPieChartOptions(),
     });
   } else {
-    ctxOuvidoriaTipos.style.display = 'none';
-    const container = ctxOuvidoriaTipos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartOuvidoriaTipos");
   }
 }
 
 // EAD
-var ctxEADStatus = document.getElementById("chartEADStatus");
-if (ctxEADStatus) {
+var canvasEADStatus = document.getElementById("chartEADStatus");
+if (canvasEADStatus) {
   if (eadStatus.length > 0) {
-    ctxEADStatus = ctxEADStatus.getContext("2d");
+    var ctxEADStatus = canvasEADStatus.getContext("2d");
     var labelsEAD = eadStatus.map((item) => item.status);
     var dataEAD = eadStatus.map((item) => item.count);
     window.chartEADStatus = new Chart(ctxEADStatus, {
@@ -310,19 +307,14 @@ if (ctxEADStatus) {
       },
     });
   } else {
-    ctxEADStatus.style.display = 'none';
-    const container = ctxEADStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartEADStatus");
   }
 }
 
-var ctxEADServicos = document.getElementById("chartEADServicos");
-if (ctxEADServicos) {
+var canvasEADServicos = document.getElementById("chartEADServicos");
+if (canvasEADServicos) {
   if (eadServicos.length > 0) {
-    ctxEADServicos = ctxEADServicos.getContext("2d");
+    var ctxEADServicos = canvasEADServicos.getContext("2d");
     var labelsEADServ = eadServicos.map((item) => item.categoria || item.tipo || item.servico);
     var dataEADServ = eadServicos.map((item) => item.count);
     window.chartEADServicos = new Chart(ctxEADServicos, {
@@ -341,20 +333,15 @@ if (ctxEADServicos) {
       options: getPieChartOptions('Serviços EAD')
     });
   } else {
-    ctxEADServicos.style.display = 'none';
-    const container = ctxEADServicos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartEADServicos");
   }
 }
 
 // Processo Seletivo
-var ctxProcessoStatus = document.getElementById("chartProcessoStatus");
-if (ctxProcessoStatus) {
+var canvasProcessoStatus = document.getElementById("chartProcessoStatus");
+if (canvasProcessoStatus) {
   if (processoStatus.length > 0) {
-    ctxProcessoStatus = ctxProcessoStatus.getContext("2d");
+    var ctxProcessoStatus = canvasProcessoStatus.getContext("2d");
     var labelsProcesso = processoStatus.map((item) => item.status);
     var dataProcesso = processoStatus.map((item) => item.count);
     window.chartProcessoStatus = new Chart(ctxProcessoStatus, {
@@ -371,19 +358,14 @@ if (ctxProcessoStatus) {
       },
     });
   } else {
-    ctxProcessoStatus.style.display = 'none';
-    const container = ctxProcessoStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartProcessoStatus");
   }
 }
 
-var ctxProcessoServicos = document.getElementById("chartProcessoServicos");
-if (ctxProcessoServicos) {
+var canvasProcessoServicos = document.getElementById("chartProcessoServicos");
+if (canvasProcessoServicos) {
   if (processoServicos.length > 0) {
-    ctxProcessoServicos = ctxProcessoServicos.getContext("2d");
+    var ctxProcessoServicos = canvasProcessoServicos.getContext("2d");
     var labelsProcessoServ = processoServicos.map((item) => item.categoria || item.tipo || item.servico);
     var dataProcessoServ = processoServicos.map((item) => item.count);
     window.chartProcessoServicos = new Chart(ctxProcessoServicos, {
@@ -400,20 +382,15 @@ if (ctxProcessoServicos) {
       options: getPieChartOptions(),
     });
   } else {
-    ctxProcessoServicos.style.display = 'none';
-    const container = ctxProcessoServicos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartProcessoServicos");
   }
 }
 
 // Secretaria
-var ctxSecretariaStatus = document.getElementById("chartSecretariaStatus");
-if (ctxSecretariaStatus) {
+var canvasSecretariaStatus = document.getElementById("chartSecretariaStatus");
+if (canvasSecretariaStatus) {
   if (secretariaStatus.length > 0) {
-    ctxSecretariaStatus = ctxSecretariaStatus.getContext("2d");
+    var ctxSecretariaStatus = canvasSecretariaStatus.getContext("2d");
     var labelsSecretaria = secretariaStatus.map((item) => item.status);
     var dataSecretaria = secretariaStatus.map((item) => item.count);
     window.chartSecretariaStatus = new Chart(ctxSecretariaStatus, {
@@ -430,19 +407,14 @@ if (ctxSecretariaStatus) {
       },
     });
   } else {
-    ctxSecretariaStatus.style.display = 'none';
-    const container = ctxSecretariaStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartSecretariaStatus");
   }
 }
 
-var ctxSecretariaServicos = document.getElementById("chartSecretariaServicos");
-if (ctxSecretariaServicos) {
+var canvasSecretariaServicos = document.getElementById("chartSecretariaServicos");
+if (canvasSecretariaServicos) {
   if (secretariaServicos.length > 0) {
-    ctxSecretariaServicos = ctxSecretariaServicos.getContext("2d");
+    var ctxSecretariaServicos = canvasSecretariaServicos.getContext("2d");
     var labelsSecretariaServ = secretariaServicos.map((item) => {
       return item.categoria || "Categoria não definida";
     });
@@ -461,20 +433,15 @@ if (ctxSecretariaServicos) {
       options: getPieChartOptions(),
     });
   } else {
-    ctxSecretariaServicos.style.display = 'none';
-    const container = ctxSecretariaServicos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartSecretariaServicos");
   }
 }
 
 // Financeiro
-var ctxFinanceiroStatus = document.getElementById("chartFinanceiroStatus");
-if (ctxFinanceiroStatus) {
+var canvasFinanceiroStatus = document.getElementById("chartFinanceiroStatus");
+if (canvasFinanceiroStatus) {
   if (financeiroStatus.length > 0) {
-    ctxFinanceiroStatus = ctxFinanceiroStatus.getContext("2d");
+    var ctxFinanceiroStatus = canvasFinanceiroStatus.getContext("2d");
     var labelsFinanceiro = financeiroStatus.map((item) => item.status);
     var dataFinanceiro = financeiroStatus.map((item) => item.count);
     window.chartFinanceiroStatus = new Chart(ctxFinanceiroStatus, {
@@ -491,19 +458,14 @@ if (ctxFinanceiroStatus) {
       },
     });
   } else {
-    ctxFinanceiroStatus.style.display = 'none';
-    const container = ctxFinanceiroStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartFinanceiroStatus");
   }
 }
 
-var ctxFinanceiroServicos = document.getElementById("chartFinanceiroServicos");
-if (ctxFinanceiroServicos) {
+var canvasFinanceiroServicos = document.getElementById("chartFinanceiroServicos");
+if (canvasFinanceiroServicos) {
   if (financeiroServicos.length > 0) {
-    ctxFinanceiroServicos = ctxFinanceiroServicos.getContext("2d");
+    var ctxFinanceiroServicos = canvasFinanceiroServicos.getContext("2d");
     var labelsFinanceiroServ = financeiroServicos.map((item) => item.categoria || item.tipo || item.servico);
     var dataFinanceiroServ = financeiroServicos.map((item) => item.count);
     window.chartFinanceiroServicos = new Chart(ctxFinanceiroServicos, {
@@ -520,20 +482,15 @@ if (ctxFinanceiroServicos) {
       options: getPieChartOptions(),
     });
   } else {
-    ctxFinanceiroServicos.style.display = 'none';
-    const container = ctxFinanceiroServicos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartFinanceiroServicos");
   }
 }
 
 // Ex-Aluno
-var ctxExAlunoStatus = document.getElementById("chartExAlunoStatus");
-if (ctxExAlunoStatus) {
+var canvasExAlunoStatus = document.getElementById("chartExAlunoStatus");
+if (canvasExAlunoStatus) {
   if (exalunoStatus.length > 0) {
-    ctxExAlunoStatus = ctxExAlunoStatus.getContext("2d");
+    var ctxExAlunoStatus = canvasExAlunoStatus.getContext("2d");
     var labelsExAluno = exalunoStatus.map((item) => item.status);
     var dataExAluno = exalunoStatus.map((item) => item.count);
     window.chartExAlunoStatus = new Chart(ctxExAlunoStatus, {
@@ -550,19 +507,14 @@ if (ctxExAlunoStatus) {
       },
     });
   } else {
-    ctxExAlunoStatus.style.display = 'none';
-    const container = ctxExAlunoStatus.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartExAlunoStatus");
   }
 }
 
-var ctxExAlunoServicos = document.getElementById("chartExAlunoServicos");
-if (ctxExAlunoServicos) {
+var canvasExAlunoServicos = document.getElementById("chartExAlunoServicos");
+if (canvasExAlunoServicos) {
   if (exalunoServicos.length > 0) {
-    ctxExAlunoServicos = ctxExAlunoServicos.getContext("2d");
+    var ctxExAlunoServicos = canvasExAlunoServicos.getContext("2d");
     var labelsExAlunoServ = exalunoServicos.map((item) => item.manifestacao || item.categoria || item.tipo || item.servico);
     var dataExAlunoServ = exalunoServicos.map((item) => item.count);
     window.chartExAlunoServicos = new Chart(ctxExAlunoServicos, {
@@ -579,12 +531,7 @@ if (ctxExAlunoServicos) {
       options: getPieChartOptions(),
     });
   } else {
-    ctxExAlunoServicos.style.display = 'none';
-    const container = ctxExAlunoServicos.parentElement;
-    const noDataMsg = document.createElement('p');
-    noDataMsg.className = 'no-data';
-    noDataMsg.textContent = 'Nenhum dado encontrado para o período selecionado.';
-    container.appendChild(noDataMsg);
+    hideCanvasAndShowNoData("chartExAlunoServicos");
   }
 }
 
