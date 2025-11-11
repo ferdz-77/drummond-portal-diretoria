@@ -51,21 +51,10 @@ function getSLAMedioFinanceiroMesAnterior() {
 function getServicosSolicitadosFinanceiro() {
     try {
         $pdo = connectDB(getProductionDatabaseName('financeiro'));
-        $stmt = $pdo->query("SELECT 
-            CASE 
-                WHEN " . COL_SERVICO_FINANCEIRO . " = '' OR " . COL_SERVICO_FINANCEIRO . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_FINANCEIRO . "
-            END as categoria,
-            COUNT(*) as count 
-            FROM " . TABLE_FINANCEIRO . " 
-            GROUP BY 
-            CASE 
-                WHEN " . COL_SERVICO_FINANCEIRO . " = '' OR " . COL_SERVICO_FINANCEIRO . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_FINANCEIRO . "
-            END");
+        $stmt = $pdo->query("SELECT " . COL_SERVICO_FINANCEIRO . ", COUNT(*) as count FROM " . TABLE_FINANCEIRO . " GROUP BY " . COL_SERVICO_FINANCEIRO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        // Se a coluna não existir, retornar array vazio
+        // Se as colunas não existirem ou banco não existir, retornar array vazio
         return [];
     }
 }
@@ -135,6 +124,18 @@ function getTotalChamadosFinanceiro() {
         $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_FINANCEIRO);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
+
+function getChamadosFinalizadosFinanceiro() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('financeiro'));
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM " . TABLE_FINANCEIRO . " WHERE " . COL_STATUS_FINANCEIRO . " IN ('finalizado', 'respondido', 'respondido drummond', 'Fechado', 'Transferido')");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] ?? 0;
     } catch (Exception $e) {
         // Se as colunas não existirem ou banco não existir, retornar 0
         return 0;

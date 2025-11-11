@@ -200,11 +200,12 @@ if (ctxChamadosPorPortal) {
   // Usar dados reais se disponíveis, senão usar dados padrão
   var chartData = {
     labels: ["Ouvidoria", "EAD", "Processo Seletivo", "Secretaria", "Financeiro", "Ex-Aluno"],
-    data: [0, 0, 0, 0, 0, 0] // Valores padrão
+    totais: [0, 0, 0, 0, 0, 0], // Valores padrão para totais
+    finalizados: [0, 0, 0, 0, 0, 0] // Valores padrão para finalizados
   };
   
   if (typeof totaisPorPortal !== 'undefined' && totaisPorPortal) {
-    chartData.data = [
+    chartData.totais = [
       totaisPorPortal['Ouvidoria'] || 0,
       totaisPorPortal['EAD'] || 0,
       totaisPorPortal['Processo Seletivo'] || 0,
@@ -214,15 +215,32 @@ if (ctxChamadosPorPortal) {
     ];
   }
   
+  if (typeof finalizadosPorPortal !== 'undefined' && finalizadosPorPortal) {
+    chartData.finalizados = [
+      finalizadosPorPortal['Ouvidoria'] || 0,
+      finalizadosPorPortal['EAD'] || 0,
+      finalizadosPorPortal['Processo Seletivo'] || 0,
+      finalizadosPorPortal['Secretaria'] || 0,
+      finalizadosPorPortal['Financeiro'] || 0,
+      finalizadosPorPortal['Ex-Aluno'] || 0
+    ];
+  }
+  
   window.chartChamadosPorPortal = new Chart(ctxChamadosPorPortal, {
     type: "bar",
     data: {
       labels: chartData.labels,
       datasets: [{
-        label: "Chamados",
-        data: chartData.data,
+        label: "Total de Chamados",
+        data: chartData.totais,
         backgroundColor: "#001830",
         borderColor: "#ff5b00",
+        borderWidth: 1
+      }, {
+        label: "Chamados Finalizados",
+        data: chartData.finalizados,
+        backgroundColor: "#28a745",
+        borderColor: "#1e7e34",
         borderWidth: 1
       }]
     },

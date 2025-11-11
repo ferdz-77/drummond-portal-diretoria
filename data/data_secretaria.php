@@ -49,13 +49,25 @@ function getTempoMedioSecretaria() {
 }
 
 function getServicosSolicitadosSecretaria() {
-    $pdo = connectDB(getProductionDatabaseName('secretaria'));
     try {
+        $pdo = connectDB(getProductionDatabaseName('secretaria'));
         $stmt = $pdo->query("SELECT " . COL_SERVICO_SECRETARIA . ", COUNT(*) as count FROM " . TABLE_SECRETARIA . " GROUP BY " . COL_SERVICO_SECRETARIA);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        // Se a coluna não existir, retornar array vazio
+        // Se as colunas não existirem ou banco não existir, retornar array vazio
         return [];
+    }
+}
+
+function getChamadosFinalizadosSecretaria() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('secretaria'));
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM " . TABLE_SECRETARIA . " WHERE " . COL_STATUS_SECRETARIA . " IN ('finalizado', 'respondido', 'Fechado', 'Transferido')");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
     }
 }
 

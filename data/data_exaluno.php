@@ -48,6 +48,18 @@ function getServicosSolicitadosExAluno() {
     }
 }
 
+function getChamadosFinalizadosExAluno() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM " . TABLE_EXALUNO . " WHERE " . COL_STATUS_EXALUNO . " IN ('Transferido', 'Finalizado', 'Fechado')");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
+
 // Funções filtradas por período
 function getChamadosStatusExAlunoFiltered($periodo) {
     try {

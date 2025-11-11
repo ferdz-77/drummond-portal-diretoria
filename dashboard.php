@@ -178,6 +178,23 @@ try {
     $exaluno_total = 0;
 }
 
+// Calcular chamados finalizados para cada portal
+try {
+    $ouvidoria_finalizados = getChamadosFinalizadosOuvidoria();
+    $ead_finalizados = getChamadosFinalizadosEAD();
+    $processo_finalizados = getChamadosFinalizadosProcessoSeletivo();
+    $secretaria_finalizados = getChamadosFinalizadosSecretaria();
+    $financeiro_finalizados = getChamadosFinalizadosFinanceiro();
+    $exaluno_finalizados = getChamadosFinalizadosExAluno();
+} catch (Exception $e) {
+    $ouvidoria_finalizados = 0;
+    $ead_finalizados = 0;
+    $processo_finalizados = 0;
+    $secretaria_finalizados = 0;
+    $financeiro_finalizados = 0;
+    $exaluno_finalizados = 0;
+}
+
 // Calcular total consolidado e distribuição por status
 try {
     $total_consolidado = $ouvidoria_total + $ead_total + $processo_total + $secretaria_total + $financeiro_total + $exaluno_total;
@@ -1067,6 +1084,16 @@ function getSLAClass($sla) {
             'Secretaria': <?php echo $secretaria_total; ?>,
             'Financeiro': <?php echo $financeiro_total; ?>,
             'Ex-Aluno': <?php echo $exaluno_total; ?>
+        };
+
+        // Chamados finalizados por portal para gráfico de barras
+        var finalizadosPorPortal = {
+            'Ouvidoria': <?php echo $ouvidoria_finalizados; ?>,
+            'EAD': <?php echo $ead_finalizados; ?>,
+            'Processo Seletivo': <?php echo $processo_finalizados; ?>,
+            'Secretaria': <?php echo $secretaria_finalizados; ?>,
+            'Financeiro': <?php echo $financeiro_finalizados; ?>,
+            'Ex-Aluno': <?php echo $exaluno_finalizados; ?>
         };
     </script>
     <script src="js/dashboard.js?v=<?php echo time(); ?>"></script>

@@ -49,24 +49,25 @@ function getSLAMedioEADMesAnterior() {
 }
 
 function getServicosSolicitadosEAD() {
-    $pdo = connectDB(getProductionDatabaseName('ead'));
     try {
-        $stmt = $pdo->query("SELECT 
-            CASE 
-                WHEN " . COL_SERVICO_EAD . " = '' OR " . COL_SERVICO_EAD . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_EAD . "
-            END as categoria,
-            COUNT(*) as count 
-            FROM " . TABLE_EAD . " 
-            GROUP BY 
-            CASE 
-                WHEN " . COL_SERVICO_EAD . " = '' OR " . COL_SERVICO_EAD . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_EAD . "
-            END");
+        $pdo = connectDB(getProductionDatabaseName('ead'));
+        $stmt = $pdo->query("SELECT " . COL_SERVICO_EAD . ", COUNT(*) as count FROM " . TABLE_EAD . " GROUP BY " . COL_SERVICO_EAD);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        // Se a coluna não existir, retornar array vazio
+        // Se as colunas não existirem ou banco não existir, retornar array vazio
         return [];
+    }
+}
+
+function getChamadosFinalizadosEAD() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('ead'));
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM " . TABLE_EAD . " WHERE " . COL_STATUS_EAD . " IN ('finalizado', 'respondido', 'Fechado', 'Transferido')");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
     }
 }
 

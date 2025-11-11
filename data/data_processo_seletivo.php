@@ -49,23 +49,12 @@ function getSLAMedioProcessoSeletivo() {
 }
 
 function getServicosSolicitadosProcessoSeletivo() {
-    $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
     try {
-        $stmt = $pdo->query("SELECT 
-            CASE 
-                WHEN " . COL_SERVICO_PROCESSO . " = '' OR " . COL_SERVICO_PROCESSO . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_PROCESSO . "
-            END as categoria,
-            COUNT(*) as count 
-            FROM " . TABLE_PROCESSO . " 
-            GROUP BY 
-            CASE 
-                WHEN " . COL_SERVICO_PROCESSO . " = '' OR " . COL_SERVICO_PROCESSO . " IS NULL THEN 'Categoria não informada'
-                ELSE " . COL_SERVICO_PROCESSO . "
-            END");
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
+        $stmt = $pdo->query("SELECT " . COL_SERVICO_PROCESSO . ", COUNT(*) as count FROM " . TABLE_PROCESSO . " GROUP BY " . COL_SERVICO_PROCESSO);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
-        // Se a coluna não existir, retornar array vazio
+        // Se as colunas não existirem ou banco não existir, retornar array vazio
         return [];
     }
 }
@@ -135,6 +124,18 @@ function getTotalChamadosProcessoSeletivo() {
         $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_PROCESSO);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] ?? 0;
+    } catch (Exception $e) {
+        // Se as colunas não existirem ou banco não existir, retornar 0
+        return 0;
+    }
+}
+
+function getChamadosFinalizadosProcessoSeletivo() {
+    try {
+        $pdo = connectDB(getProductionDatabaseName('processo_seletivo'));
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM " . TABLE_PROCESSO . " WHERE " . COL_STATUS_PROCESSO . " IN ('finalizado', 'respondido', 'Fechado', 'Transferido')");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] ?? 0;
     } catch (Exception $e) {
         // Se as colunas não existirem ou banco não existir, retornar 0
         return 0;
