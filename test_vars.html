@@ -1,0 +1,40 @@
+<?php
+include 'includes/config.php';
+include 'data/data_secretaria.php';
+
+$secretaria_servicos = getServicosSolicitadosSecretaria();
+$secretaria_status = getStatusSecretaria();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Variáveis JavaScript</title>
+</head>
+<body>
+    <h1>Teste de Variáveis JavaScript</h1>
+
+    <h2>Dados PHP:</h2>
+    <pre><?php echo json_encode($secretaria_servicos, JSON_PRETTY_PRINT); ?></pre>
+    <pre><?php echo json_encode($secretaria_status, JSON_PRETTY_PRINT); ?></pre>
+
+    <script>
+        var secretariaServicos = <?php echo json_encode($secretaria_servicos); ?>;
+        var secretariaStatus = <?php echo json_encode($secretaria_status); ?>;
+
+        console.log("Variável secretariaServicos:", secretariaServicos);
+        console.log("Variável secretariaStatus:", secretariaStatus);
+
+        // Teste do mapeamento
+        if (secretariaServicos && secretariaServicos.length > 0) {
+            var labels = secretariaServicos.map(item => {
+                console.log("Item processado:", item);
+                return item.categoria || item.tipo || item.servico || "undefined";
+            });
+            console.log("Labels resultantes:", labels);
+        } else {
+            console.log("secretariaServicos está vazio ou undefined");
+        }
+    </script>
+</body>
+</html>

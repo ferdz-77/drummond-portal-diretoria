@@ -226,11 +226,7 @@ if (!function_exists('connectDB')) {
 // Função helper para mapear nomes de bancos baseado no ambiente
 function getProductionDatabaseName($development_name) {
     global $environment;
-    
-    if ($environment !== 'production') {
-        return $development_name;
-    }
-    
+
     // Mapeamento desenvolvimento → produção
     $database_mapping = [
         // Mapeamento com prefixo portal_
@@ -241,8 +237,8 @@ function getProductionDatabaseName($development_name) {
         'portal_financeiro' => 'fini',
         'portal_exaluno' => 'bdsolicita_atendimento',
         'portal_diretoria' => 'dbgproto',
-        
-        // Mapeamento direto (sem prefixo)
+
+        // Mapeamento direto (sem prefixo) - usado nos arquivos data_*.php
         'ouvidoria' => 'bdsolicita_atendimento',
         'ead' => 'dbead',
         'processo_seletivo' => 'pseldb',
@@ -250,7 +246,21 @@ function getProductionDatabaseName($development_name) {
         'financeiro' => 'fini',
         'exaluno' => 'bdsolicita_atendimento'
     ];
-    
-    return $database_mapping[$development_name] ?? $development_name;
+
+    if ($environment === 'production') {
+        // Em produção, retornar o nome do banco de produção
+        return $database_mapping[$development_name] ?? $development_name;
+    } else {
+        // Em desenvolvimento, converter para nome com prefixo portal_
+        $dev_mapping = [
+            'ouvidoria' => 'portal_ouvidoria',
+            'ead' => 'portal_ead',
+            'processo_seletivo' => 'portal_processo_seletivo',
+            'secretaria' => 'portal_secretaria_academica',
+            'financeiro' => 'portal_financeiro',
+            'exaluno' => 'portal_exaluno'
+        ];
+        return $dev_mapping[$development_name] ?? $development_name;
+    }
 }
 ?>

@@ -85,18 +85,12 @@ function getServicosSolicitadosExAlunoFiltered($periodo) {
 
 function getTotalChamadosExAluno() {
     try {
-        $pdo = connectDBEnvironment('exaluno');
+        $pdo = connectDB(getProductionDatabaseName('exaluno'));
         $stmt = $pdo->query("SELECT COUNT(*) as total FROM " . TABLE_EXALUNO);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $total = $result['total'] ?? 0;
-        
-        // Debug temporário
-        error_log("DEBUG ExAluno: Total encontrado: " . $total . " na tabela " . TABLE_EXALUNO);
-        
-        return $total;
+        return $result['total'] ?? 0;
     } catch (Exception $e) {
         // Se as colunas não existirem ou banco não existir, retornar 0
-        error_log("DEBUG ExAluno: Erro na query: " . $e->getMessage());
         return 0;
     }
 }
