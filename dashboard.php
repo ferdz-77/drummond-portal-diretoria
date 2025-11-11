@@ -195,6 +195,23 @@ try {
     $exaluno_finalizados = 0;
 }
 
+// Calcular chamados em aberto para cada portal
+try {
+    $ouvidoria_abertos = getChamadosAbertosOuvidoria();
+    $ead_abertos = getChamadosAbertosEAD();
+    $processo_abertos = getChamadosAbertosProcessoSeletivo();
+    $secretaria_abertos = getChamadosAbertosSecretaria();
+    $financeiro_abertos = getChamadosAbertosFinanceiro();
+    $exaluno_abertos = getChamadosAbertosExAluno();
+} catch (Exception $e) {
+    $ouvidoria_abertos = 0;
+    $ead_abertos = 0;
+    $processo_abertos = 0;
+    $secretaria_abertos = 0;
+    $financeiro_abertos = 0;
+    $exaluno_abertos = 0;
+}
+
 // Calcular total consolidado e distribuição por status
 try {
     $total_consolidado = $ouvidoria_total + $ead_total + $processo_total + $secretaria_total + $financeiro_total + $exaluno_total;
@@ -1094,6 +1111,16 @@ function getSLAClass($sla) {
             'Secretaria': <?php echo $secretaria_finalizados; ?>,
             'Financeiro': <?php echo $financeiro_finalizados; ?>,
             'Ex-Aluno': <?php echo $exaluno_finalizados; ?>
+        };
+
+        // Chamados em aberto por portal para gráfico de barras
+        var abertosPorPortal = {
+            'Ouvidoria': <?php echo $ouvidoria_abertos; ?>,
+            'EAD': <?php echo $ead_abertos; ?>,
+            'Processo Seletivo': <?php echo $processo_abertos; ?>,
+            'Secretaria': <?php echo $secretaria_abertos; ?>,
+            'Financeiro': <?php echo $financeiro_abertos; ?>,
+            'Ex-Aluno': <?php echo $exaluno_abertos; ?>
         };
     </script>
     <script src="js/dashboard.js?v=<?php echo time(); ?>"></script>

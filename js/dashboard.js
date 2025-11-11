@@ -201,7 +201,8 @@ if (ctxChamadosPorPortal) {
   var chartData = {
     labels: ["Ouvidoria", "EAD", "Processo Seletivo", "Secretaria", "Financeiro", "Ex-Aluno"],
     totais: [0, 0, 0, 0, 0, 0], // Valores padrão para totais
-    finalizados: [0, 0, 0, 0, 0, 0] // Valores padrão para finalizados
+    finalizados: [0, 0, 0, 0, 0, 0], // Valores padrão para finalizados
+    abertos: [0, 0, 0, 0, 0, 0] // Valores padrão para abertos
   };
   
   if (typeof totaisPorPortal !== 'undefined' && totaisPorPortal) {
@@ -225,6 +226,17 @@ if (ctxChamadosPorPortal) {
       finalizadosPorPortal['Ex-Aluno'] || 0
     ];
   }
+
+  if (typeof abertosPorPortal !== 'undefined' && abertosPorPortal) {
+    chartData.abertos = [
+      abertosPorPortal['Ouvidoria'] || 0,
+      abertosPorPortal['EAD'] || 0,
+      abertosPorPortal['Processo Seletivo'] || 0,
+      abertosPorPortal['Secretaria'] || 0,
+      abertosPorPortal['Financeiro'] || 0,
+      abertosPorPortal['Ex-Aluno'] || 0
+    ];
+  }
   
   window.chartChamadosPorPortal = new Chart(ctxChamadosPorPortal, {
     type: "bar",
@@ -241,6 +253,12 @@ if (ctxChamadosPorPortal) {
         data: chartData.finalizados,
         backgroundColor: "#0d6efd",
         borderColor: "#0a58ca",
+        borderWidth: 1
+      }, {
+        label: "Chamados em Aberto",
+        data: chartData.abertos,
+        backgroundColor: "#ffc107",
+        borderColor: "#e0a800",
         borderWidth: 1
       }]
     },
