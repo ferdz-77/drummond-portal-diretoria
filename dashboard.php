@@ -195,14 +195,14 @@ try {
     $exaluno_finalizados = 0;
 }
 
-// Calcular chamados em aberto para cada portal
+// Calcular chamados em aberto para cada portal (total - finalizados)
 try {
-    $ouvidoria_abertos = getChamadosAbertosOuvidoria();
-    $ead_abertos = getChamadosAbertosEAD();
-    $processo_abertos = getChamadosAbertosProcessoSeletivo();
-    $secretaria_abertos = getChamadosAbertosSecretaria();
-    $financeiro_abertos = getChamadosAbertosFinanceiro();
-    $exaluno_abertos = getChamadosAbertosExAluno();
+    $ouvidoria_abertos = $ouvidoria_total - $ouvidoria_finalizados;
+    $ead_abertos = $ead_total - $ead_finalizados;
+    $processo_abertos = $processo_total - $processo_finalizados;
+    $secretaria_abertos = $secretaria_total - $secretaria_finalizados;
+    $financeiro_abertos = $financeiro_total - $financeiro_finalizados;
+    $exaluno_abertos = $exaluno_total - $exaluno_finalizados;
 } catch (Exception $e) {
     $ouvidoria_abertos = 0;
     $ead_abertos = 0;
