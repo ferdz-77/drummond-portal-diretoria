@@ -239,8 +239,8 @@ if (ctxChamadosPorPortal) {
       }, {
         label: "Chamados Finalizados",
         data: chartData.finalizados,
-        backgroundColor: "#28a745",
-        borderColor: "#1e7e34",
+        backgroundColor: "#0d6efd",
+        borderColor: "#0a58ca",
         borderWidth: 1
       }]
     },
